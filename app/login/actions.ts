@@ -30,7 +30,7 @@ export async function signUp(formData: FormData) {
   const origin = headers().get("origin");
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const fullName = formData.get("fullName") as string;
+  const full_name = formData.get("full_name") as string;
   const cpf = formData.get("cpf") as string;
   const phone = formData.get("phone") as string;
   const interest = formData.get("interest") as string;
@@ -41,7 +41,7 @@ export async function signUp(formData: FormData) {
     password,
     options: {
       data: {
-        fullName: fullName,
+        full_name: full_name,
         cpf: cpf,
         phone: phone,
         interest: interest,

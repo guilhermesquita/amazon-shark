@@ -67,12 +67,12 @@ export default function Login({ searchParams }: { searchParams: { message: strin
               placeholder="••••••••"
               required
             />
-            <label className="text-md" htmlFor="fullName">
+            <label className="text-md" htmlFor="full_name">
               Nome Completo
             </label>
             <input
               className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              name="fullName"
+              name="full_name"
               placeholder="Seu Nome Completo"
               required
             />
