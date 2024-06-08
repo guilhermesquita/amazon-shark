@@ -1,6 +1,7 @@
 import DeployButton from "../components/DeployButton";
 import AuthButton from "../components/AuthButton";
 import { createClient } from "@/utils/supabase/server";
+import MenuButton from "@/components/MenuButton";
 
 export default async function Index() {
   const canInitSupabaseClient = () => {
@@ -19,6 +20,7 @@ export default async function Index() {
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
           <DeployButton />
+          <MenuButton/>
           {isSupabaseConnected && <AuthButton />}
         </div>
       </nav>
