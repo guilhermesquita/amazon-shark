@@ -1,54 +1,14 @@
+"use client"
 import Link from "next/link";
-import { headers } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
+import { useState } from "react";
+import { signIn,signUp } from "./actions";
 
-export default function Login({
-  searchParams,
-}: {
-  searchParams: { message: string };
-}) {
-  const signIn = async (formData: FormData) => {
-    "use server";
+export default function Login({ searchParams }: { searchParams: { message: string } }) {
+  const [showSignupFields, setShowSignupFields] = useState(false);
 
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      return redirect("/login?message=Could not authenticate user");
-    }
-
-    return redirect("/protected");
-  };
-
-  const signUp = async (formData: FormData) => {
-    "use server";
-
-    const origin = headers().get("origin");
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      return redirect("/login?message=Could not authenticate user");
-    }
-
-    return redirect("/login?message=Check email to continue sign in process");
+  const handleShowSignupFields = () => {
+    setShowSignupFields(true);
   };
 
   return (
@@ -71,10 +31,10 @@ export default function Login({
         >
           <polyline points="15 18 9 12 15 6" />
         </svg>{" "}
-        Back
+        Voltar
       </Link>
 
-      <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
+      <form className="animate-in flex-1 flex flex-col w-full justify-center text-foreground">
         <label className="text-md" htmlFor="email">
           Email
         </label>
@@ -85,7 +45,7 @@ export default function Login({
           required
         />
         <label className="text-md" htmlFor="password">
-          Password
+          Senha
         </label>
         <input
           className="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -94,20 +54,109 @@ export default function Login({
           placeholder="••••••••"
           required
         />
-        <SubmitButton
-          formAction={signIn}
-          className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing In..."
-        >
-          Sign In
-        </SubmitButton>
-        <SubmitButton
-          formAction={signUp}
-          className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing Up..."
-        >
-          Sign Up
-        </SubmitButton>
+
+        {showSignupFields && (
+          <>
+            <label className="text-md" htmlFor="confirmPassword">
+              Confirmar Senha
+            </label>
+            <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              type="password"
+              name="confirmPassword"
+              placeholder="••••••••"
+              required
+            />
+            <label className="text-md" htmlFor="fullName">
+              Nome Completo
+            </label>
+            <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              name="fullName"
+              placeholder="Seu Nome Completo"
+              required
+            />
+            <label className="text-md" htmlFor="cpf">
+              CPF
+            </label>
+            <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              name="cpf"
+              placeholder="000.000.000-00"
+              required
+            />
+            <label className="text-md" htmlFor="phone">
+              Celular
+            </label>
+            <input
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              type="tel"
+              name="phone"
+              placeholder="(00) 00000-0000"
+              required
+            />
+            <label className="text-md" htmlFor="interest">
+              Interessado em
+            </label>
+            <select
+              className="rounded-md px-4 py-2 bg-inherit border mb-6"
+              name="interest"
+              required
+            >
+              <option value="investir">Investir</option>
+              <option value="captar">Captar Investimento</option>
+            </select>
+            <label className="text-md" htmlFor="accountType">
+              Tipo de Conta
+            </label>
+            <div className="flex flex-row mb-6">
+              <label className="flex items-center mr-4">
+                <input
+                  type="radio"
+                  name="accountType"
+                  value="fisica"
+                  defaultChecked
+                />
+                <span className="ml-2">Pessoa Física</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="accountType"
+                  value="juridica"
+                />
+                <span className="ml-2">Pessoa Jurídica</span>
+              </label>
+            </div>
+          </>
+        )}
+
+        {!showSignupFields ? (
+          <>
+            <SubmitButton
+              formAction={signIn}
+              className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
+              pendingText="Entrando..."
+            >
+              Entrar
+            </SubmitButton>
+            <button
+              type="button"
+              className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
+              onClick={handleShowSignupFields}
+            >
+              Desejo me cadastrar
+            </button>
+          </>
+        ) : (
+          <SubmitButton
+            formAction={signUp}
+            className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
+            pendingText="Cadastrando..."
+          >
+            Cadastrar
+          </SubmitButton>
+        )}
         {searchParams?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
             {searchParams.message}
