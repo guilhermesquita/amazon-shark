@@ -1,16 +1,15 @@
-import { User } from '@supabase/supabase-js';
 import React, { useState, useEffect } from 'react';
 import { getUser } from './actions';
 import AddEmpresa from './addEmpresa/AddEmpresa';
 
 export default function UserContent() {
-  const [userFullName, setUserFullName] = useState<string | undefined>('');
+  const [userFullName, setUserFullName] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const user: User | null = await getUser();
-        if (user && user.user_metadata && user.user_metadata.fullName) {
+        const user = await getUser();
+        if (user && user.user_metadata.fullName) {
           setUserFullName(user.user_metadata.fullName);
         }
       } catch (error) {

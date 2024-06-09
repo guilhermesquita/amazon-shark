@@ -3,11 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-
-type UserMetadata = {
-  email: string;
-  id: string;
-};
+import { UserMetadata } from "./types/user";
 
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
@@ -15,11 +11,15 @@ export async function getUser(): Promise<UserMetadata | null> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  console.log(user);
 
   if (user && user.email && user.id) {
     const metadata: UserMetadata = {
       email: user.email,
       id: user.id,
+      user_metadata :{
+        fullName: user.user_metadata.fullName
+      }
     };
     return metadata;
   }

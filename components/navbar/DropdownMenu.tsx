@@ -1,22 +1,27 @@
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, MouseEvent } from "react";
 
-export default function DropdownMenu({ onLogout, userName }) {
+type DropdownMenuProps = {
+  onLogout: (event: MouseEvent<HTMLButtonElement>) => void;
+  userName: string;
+};
+
+export default function DropdownMenu({ onLogout, userName }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleToggle = () => setIsOpen(!isOpen);
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent<Document>) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
       setIsOpen(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside as any);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside as any);
     };
   }, []);
 
@@ -33,8 +38,8 @@ export default function DropdownMenu({ onLogout, userName }) {
       </button>
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 border rounded-md shadow-lg">
-          <Link href="/dashboard"  className="block text-left py-2 px-4 hover:bg-gray-400 rounded">
-              Dashboard
+          <Link href="/dashboard" className="block text-left py-2 px-4 hover:bg-gray-400 rounded">
+            Dashboard
           </Link>
           <button
             className="w-full text-left py-2 px-4 hover:bg-gray-400 rounded"
