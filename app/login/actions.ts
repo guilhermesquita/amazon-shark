@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
@@ -21,7 +20,7 @@ export async function signIn(formData: FormData) {
     return redirect("/login?message=Could not authenticate user");
   }
 
-  return redirect("/protected");
+  return redirect("/");
 }
 
 export async function signUp(formData: FormData) {
