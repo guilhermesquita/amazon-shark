@@ -3,12 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { getUser } from './actions';
 import AddEmpresa from './addEmpresa/AddEmpresa';
 
-interface UserData {
-  user_metadata?: {
-    fullName?: string;
-  };
-}
-
 export default function UserContent() {
   const [userFullName, setUserFullName] = useState<string | undefined>('');
 

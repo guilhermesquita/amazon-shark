@@ -1,26 +1,21 @@
-'use client'; // Importante para identificar que este é um client component
-
+"use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getUser, signOut } from '../actions';
 import DropdownMenu from './DropdownMenu';
 
-interface User {
-  id: string;
+type UserMetadata = {
   email: string;
-}
+  id: string;
+};
 
 export default function AuthButton() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserMetadata | null>(null);
 
   useEffect(() => {
     async function fetchUser() {
       const fetchedUser = await getUser();
-      if (fetchedUser) {
-        setUser(fetchedUser);
-      } else {
-        setUser(null);
-      }
+      setUser(fetchedUser);
       console.log(fetchedUser);
     }
 
@@ -34,7 +29,7 @@ export default function AuthButton() {
   };
 
   return user ? (
-    <DropdownMenu onLogout={handleLogout} userName={user.email.split('@')[0]} />
+    <DropdownMenu onLogout={handleLogout} userName={user.email ? user.email.split('@')[0] : ''} />
   ) : (
     <Link
       href="/login"

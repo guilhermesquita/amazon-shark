@@ -1,22 +1,37 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
-export async function getUser() {
-  const supabase = createClient()
+type UserMetadata = {
+  email: string;
+  id: string;
+};
 
-  const data = await supabase.auth.getUser();
+export async function getUser(): Promise<UserMetadata | null> {
+  const supabase = createClient();
 
-  return data.data.user || null;;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user && user.email && user.id) {
+    const metadata: UserMetadata = {
+      email: user.email,
+      id: user.id,
+    };
+    return metadata;
+  }
+
+  return null;
 }
 
-export async function signOut(){
-    const supabase = createClient();
+export async function signOut() {
+  const supabase = createClient();
 
-    await supabase.auth.signOut();
+  await supabase.auth.signOut();
 
-    revalidatePath('/');
-    return redirect("/login");
+  revalidatePath('/');
+  return redirect("/login");
 }
