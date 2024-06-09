@@ -1,3 +1,4 @@
+import Navbar from "@/components/navbar/Navbar";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 

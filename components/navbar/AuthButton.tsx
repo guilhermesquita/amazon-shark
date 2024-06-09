@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getUser, signOut } from '../actions';
+import DropdownMenu from './DropdownMenu';
 
 interface User {
   id: string;
@@ -33,13 +34,7 @@ export default function AuthButton() {
   };
 
   return user ? (
-    <div className="flex items-center gap-4">
-      <form onSubmit={handleLogout}>
-        <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-          Logout
-        </button>
-      </form>
-    </div>
+    <DropdownMenu onLogout={handleLogout} userName={user.email.split('@')[0]} />
   ) : (
     <Link
       href="/login"
