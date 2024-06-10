@@ -8,7 +8,7 @@ type SidebarProps = {
 
 const Sidebar: React.FC<SidebarProps> = ({ selectedSection, setSelectedSection }) => {
   return (
-    <div className="w-64"> {/* Define a largura do Sidebar */}
+    <div className="w-64">
       <List>
         <ListItemButton
           selected={selectedSection === 'profile'}
@@ -20,7 +20,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedSection, setSelectedSection }
           selected={selectedSection === 'companies'}
           onClick={() => setSelectedSection('companies')}
         >
-          <ListItemText primary="Companhia" />
+          <ListItemText primary="Empresas" />
         </ListItemButton>
       </List>
       <Divider />

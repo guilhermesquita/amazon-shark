@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { UserMetadata } from "./types/user";
+import { Companies } from "./types/companies";
 
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
@@ -45,3 +46,16 @@ export const getCompanies = async (user: string) => {
   .eq('user_id',user)
         
 };
+
+export async function addCompany(companyData: Companies) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase.from('companies').insert([companyData]).select();
+
+  if (error) {
+    console.error('Failed to add company:', error.message);
+    return null;
+  }
+
+  return data?.[0] ?? null;
+}

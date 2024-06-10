@@ -4,10 +4,34 @@ import Navbar from "@/components/navbar/Navbar";
 import Sidebar from "@/components/sidebar/Sidebar";
 import Companies from "@/components/usuario/Companies";
 import Profile from "@/components/usuario/Profile";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getUser } from "@/components/actions";
+import Spinner from "@/components/Spinner/Spinner";
+
+type UserMetadata = {
+  email: string;
+  id: string;
+};
 
 export default function Dashboard() {
-  const [selectedSection, setSelectedSection] = React.useState("profile");
+  const [selectedSection, setSelectedSection] = useState("profile");
+  const [user, setUser] = useState<UserMetadata | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const fetchedUser = await getUser();
+      setUser(fetchedUser);
+      setLoading(false);
+      console.log(fetchedUser);
+    }
+
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -18,9 +42,12 @@ export default function Dashboard() {
             selectedSection={selectedSection}
             setSelectedSection={setSelectedSection}
           />
-          <div className="flex-grow">
-            {selectedSection === "profile" && <Profile />}
-            {selectedSection === "companies" && <Companies />}
+          <div className="w-full h-600">
+            {user ? (
+              selectedSection === "profile" ? <Profile /> : <Companies />
+            ) : (
+              <div>Faça o Login</div>
+            )}
           </div>
         </main>
       </div>

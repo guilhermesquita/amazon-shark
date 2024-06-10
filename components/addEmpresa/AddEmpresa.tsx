@@ -1,86 +1,56 @@
-import React from "react";
-import { useState } from 'react';
-
+import React, { useState, useEffect } from "react";
+import { addCompany, getUser } from "../actions";
 
 export default function AddEmpresa() {
-    const [companyData, setCompanyData] = useState({
-        desire: '',
-        name: '',
-        cnpj: '',
-        sector: '',
-        revenueRange: '',
-        socialLinks: '',
-        description: ''
-      });
-    
-      const [projectData, setProjectData] = useState({
-        companyId: '',
-        title: '',
-        description: '',
-        categoryId: '',
-        targetAmount: ''
-      });
-    
-      const handleCompanyChange = (e: { target: { name: any; value: any; }; }) => {
-        const { name, value } = e.target;
-        setCompanyData((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
-      };
-    
-      const handleProjectChange = (e: { target: { name: any; value: any; }; }) => {
-        const { name, value } = e.target;
-        setProjectData((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
-      };
-    
-      const handleCompanySubmit = async (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-        const response = await fetch('/api/companies', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(companyData),
-        });
-    
-        if (response.ok) {
-          const newCompany = await response.json();
-          setProjectData((prevData) => ({
-            ...prevData,
-            companyId: newCompany.id, // Assume que o backend retorna o ID da nova empresa
-          }));
-        } else {
-          console.error('Failed to add company');
-        }
-      };
-    
-      const handleProjectSubmit = async (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-        const response = await fetch('/api/projects', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(projectData),
-        });
-    
-        if (response.ok) {
-          console.log('Project added successfully');
-        } else {
-          console.error('Failed to add project');
-        }
-      };
+  const [companyData, setCompanyData] = useState({
+    desire: "",
+    name: "",
+    cnpj: "",
+    sector: "",
+    revenue_range: "",
+    social_links: "",
+    description: "",
+  });
+
+  const redirectToDashboard = () => {
+    window.location.href = "/dashboard";
+  };
+
+  const handleCompanyChange = (e: { target: { name: any; value: any; }; }) => {
+    const { name, value } = e.target;
+    setCompanyData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleCompanySubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+
+    const user = await getUser();
+    if (!user?.id) {
+      console.error("User ID is undefined");
+      return;
+    }
+
+    const companyDataWithUserId = { ...companyData, user_id: user.id };
+
+    const newCompany = await addCompany(companyDataWithUserId);
+
+    if (newCompany) {
+      console.log("Company added successfully:", newCompany);
+      redirectToDashboard();
+    } else {
+      console.error("Failed to add company");
+    }
+  };
+
   return (
     <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
       <main className="flex-1 flex flex-col gap-6">
         <h1 className="text-2xl font-bold">Adicionar Empresa e Projeto</h1>
 
-        <form className="flex flex-col gap-4">
-          <h2 className="text-xl">Adicionar Empresa</h2>
+        <form className="flex flex-col gap-4" onSubmit={handleCompanySubmit}>
           <input
             type="text"
             name="desire"
@@ -115,17 +85,17 @@ export default function AddEmpresa() {
           />
           <input
             type="text"
-            name="revenueRange"
+            name="revenue_range"
             placeholder="Faixa de faturamento"
-            value={companyData.revenueRange}
+            value={companyData.revenue_range}
             onChange={handleCompanyChange}
             className="p-2 border rounded"
           />
           <input
             type="text"
-            name="socialLinks"
+            name="social_links"
             placeholder="Links de mídia social"
-            value={companyData.socialLinks}
+            value={companyData.social_links}
             onChange={handleCompanyChange}
             className="p-2 border rounded"
           />

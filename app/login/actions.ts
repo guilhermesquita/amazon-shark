@@ -17,7 +17,7 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
-    return redirect("/login?message=Could not authenticate user");
+    return redirect("/login?message=Usuário ou senha inválidos");
   }
 
   return redirect("/");
