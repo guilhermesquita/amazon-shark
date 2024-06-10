@@ -35,3 +35,13 @@ export async function signOut() {
   revalidatePath('/');
   return redirect("/login");
 }
+
+export const getCompanies = async (user: string) => {
+  const supabase = createClient();
+
+  return await supabase
+  .from('companies')
+  .select('*')
+  .eq('user_id',user)
+        
+};
