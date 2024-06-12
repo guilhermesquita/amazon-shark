@@ -10,7 +10,7 @@ import CardMedia from "@mui/material/CardMedia";
 import { Companies } from "../types/companies";
 
 const CompaniesComponent = () => {
-  const [companies, setCompanies] = useState<Companies[] | null>(null);
+  const [companies, setCompanies] = useState<Companies[]>([]); // Inicializado como array vazio
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Companies | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ const CompaniesComponent = () => {
 
       const user = await getUser();
       const response = await getCompanies(user?.id ?? "");
-      setCompanies(response?.data);
+      setCompanies(response?.data ?? []); // Se response.data for undefined, usa array vazio
       setLoading(false);
     };
 
@@ -48,7 +48,7 @@ const CompaniesComponent = () => {
     const deleted = await deleteCompany(companyId);
     if (deleted) {
       console.log("Company deleted successfully");
-      const updatedCompanies = companies?.filter(
+      const updatedCompanies = companies.filter(
         (company) => company.company_id !== companyId
       );
       setCompanies(updatedCompanies);
@@ -84,7 +84,7 @@ const CompaniesComponent = () => {
                 Adicionar Nova Empresa
               </Button>
             </Grid>
-            {companies?.map((company) => (
+            {companies.map((company) => (
               <Grid item xs={12} key={company.company_id}>
                 <Card
                   sx={{
@@ -116,7 +116,7 @@ const CompaniesComponent = () => {
                       <Button
                         onClick={() => handleEditCompanyClick(company)}
                         variant="outlined"
-                        className="text-white hover:bg-red-2000" // Adicionando classe para hover
+                        className="text-white hover:bg-red-2000"
                       >
                         Editar Empresa
                       </Button>
