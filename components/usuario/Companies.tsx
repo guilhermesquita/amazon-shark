@@ -6,6 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
+import CardMedia from "@mui/material/CardMedia";
 import { Companies } from "../types/companies";
 
 const CompaniesComponent = () => {
@@ -47,7 +48,9 @@ const CompaniesComponent = () => {
     const deleted = await deleteCompany(companyId);
     if (deleted) {
       console.log("Company deleted successfully");
-      const updatedCompanies = companies?.filter((company) => company.company_id !== companyId);
+      const updatedCompanies = companies?.filter(
+        (company) => company.company_id !== companyId
+      );
       setCompanies(updatedCompanies);
     } else {
       console.error("Failed to delete company");
@@ -55,7 +58,7 @@ const CompaniesComponent = () => {
   };
 
   return (
-    <div className="p-4 border rounded-lg shadow-md h-full">
+    <div className="p-4 border rounded-lg shadow-md h-full bg-background text-foreground">
       {loading ? (
         <p>Carregando empresas...</p>
       ) : showAddForm ? (
@@ -71,40 +74,61 @@ const CompaniesComponent = () => {
             <Grid item xs={6} textAlign="right">
               <Button
                 onClick={handleAddCompanyClick}
-                variant="contained"
-                color="primary"
+                variant="outlined"
+                style={{
+                  backgroundColor: "var(--btn-background)",
+                  color: "var(--foreground)",
+                }}
+                className="hover:bg-gray-400"
               >
                 Adicionar Nova Empresa
               </Button>
             </Grid>
             {companies?.map((company) => (
-              <Grid item key={company.company_id}>
-                <Card>
-                  <CardContent>
-                    <img
-                      src={`https://via.placeholder.com/150x150.png`} // URL de imagem de placeholder
-                      alt="Placeholder"
-                    />
-                    <Typography variant="h6" component="div">
+              <Grid item xs={12} key={company.company_id}>
+                <Card
+                  sx={{
+                    display: "flex",
+                    background: "var(--btn-background)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    sx={{ width: 150 }}
+                    image="https://via.placeholder.com/150x150.png"
+                    alt="Company Image"
+                  />
+                  <CardContent sx={{ flex: "1" }}>
+                    <Typography variant="h6" component="div" className="text-white">
                       {company.name}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary">
+                    <Typography variant="body2" className="text-white">
                       {company.description}
                     </Typography>
-                    <Button
-                      onClick={() => handleEditCompanyClick(company)}
-                      variant="contained"
-                      color="primary"
+                    <div
+                      style={{
+                        marginTop: "10px",
+                        display: "flex",
+                        gap: "10px",
+                      }}
                     >
-                      Editar Empresa
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteCompany(company.company_id)}
-                      variant="contained"
-                      color="secondary"
-                    >
-                      Excluir Empresa
-                    </Button>
+                      <Button
+                        onClick={() => handleEditCompanyClick(company)}
+                        variant="outlined"
+                        className="text-white hover:bg-red-2000" // Adicionando classe para hover
+                      >
+                        Editar Empresa
+                      </Button>
+
+                      <Button
+                        onClick={() => handleDeleteCompany(company.company_id)}
+                        variant="outlined"
+                        className="text-white hover:bg-red-2000"
+                      >
+                        Excluir Empresa
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </Grid>
