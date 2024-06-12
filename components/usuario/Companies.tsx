@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddEmpresa from "../addEmpresa/AddEmpresa";
-import { getCompanies, getUser } from "../actions";
+import { getCompanies, getUser,deleteCompany } from "../actions";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -20,6 +20,7 @@ const CompaniesComponent = () => {
       const user = await getUser();
       const response = await getCompanies(user?.id ?? "");
       setCompanies(response.data);
+      console.log(response.data)
 
       setLoading(false);
     };
@@ -29,6 +30,28 @@ const CompaniesComponent = () => {
 
   const handleAddCompanyClick = () => {
     setShowAddForm(true);
+  };
+
+  const handleDeleteCompany = async (companyId: number) => {
+    const user = await getUser();
+    if (!user?.id) {
+      console.error("User ID is undefined");
+      return;
+    }
+
+    const deleted = await deleteCompany(companyId);
+    console.log(deleted)
+    if (deleted) {
+      console.log("Company deleted successfully");
+      const updatedCompanies = companies?.filter((company) => company.company_id !== companyId);
+      if(updatedCompanies){
+        setCompanies(updatedCompanies);
+      }else{
+        setCompanies(null);
+      }
+    } else {
+      console.error("Failed to delete company");
+    }
   };
 
   return (
@@ -68,6 +91,13 @@ const CompaniesComponent = () => {
                     <Typography variant="body2" color="textSecondary">
                       {company.description}
                     </Typography>
+                    <Button
+                      onClick={() => handleDeleteCompany(company.company_id)}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Excluir Empresa
+                    </Button>
                   </CardContent>
                 </Card>
               </Grid>

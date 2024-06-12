@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getUser, signOut } from '../actions';
 import DropdownMenu from './DropdownMenu';
+import Spinner from '../Spinner/Spinner';
 
 type UserMetadata = {
   email: string;
@@ -11,16 +12,23 @@ type UserMetadata = {
 
 export default function AuthButton() {
   const [user, setUser] = useState<UserMetadata | null>(null);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     async function fetchUser() {
       const fetchedUser = await getUser();
       setUser(fetchedUser);
+      setLoading(false);
       console.log(fetchedUser);
     }
 
     fetchUser();
   }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   const handleLogout = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();

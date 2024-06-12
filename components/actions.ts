@@ -59,3 +59,34 @@ export async function addCompany(companyData: Companies) {
 
   return data?.[0] ?? null;
 }
+
+export async function deleteCompany(companyId: number) {
+  const supabase = createClient();
+
+  const { error } = await supabase.from('companies').delete().eq('company_id', companyId);
+
+  if (error) {
+    console.error('Failed to delete company:', error.message);
+    return false;
+  }
+
+  return true;
+}
+
+export async function updateCompany(companyData: Companies) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('companies')
+    .update(companyData)
+    .eq('company_id', companyData.company_id)
+    .select();
+
+  if (error) {
+    console.error('Failed to update company:', error.message);
+    return null;
+  }
+
+  return data?.[0] ?? null;
+}
+

@@ -1,10 +1,13 @@
 export type Companies = {
-    cnpj: string;
-    description: string;
+    company_id: number;
+    user_id: string;
     desire: string;
     name: string;
-    revenue_range: string;
+    cnpj: string;
     sector: string;
     social_links: string;
-    user_id: string;
+    description: string;
+    cep: string;
+    porte: string;
+    current_need: string;
   };
