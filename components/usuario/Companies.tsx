@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddEmpresa from "../addEmpresa/AddEmpresa";
-import { getCompanies, getUser,deleteCompany } from "../actions";
+import { getCompanies, getUser, deleteCompany } from "../actions";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -11,6 +11,7 @@ import { Companies } from "../types/companies";
 const CompaniesComponent = () => {
   const [companies, setCompanies] = useState<Companies[] | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<Companies | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,9 +20,7 @@ const CompaniesComponent = () => {
 
       const user = await getUser();
       const response = await getCompanies(user?.id ?? "");
-      setCompanies(response.data);
-      console.log(response.data)
-
+      setCompanies(response?.data);
       setLoading(false);
     };
 
@@ -29,6 +28,12 @@ const CompaniesComponent = () => {
   }, []);
 
   const handleAddCompanyClick = () => {
+    setEditingCompany(null);
+    setShowAddForm(true);
+  };
+
+  const handleEditCompanyClick = (company: Companies) => {
+    setEditingCompany(company);
     setShowAddForm(true);
   };
 
@@ -40,15 +45,10 @@ const CompaniesComponent = () => {
     }
 
     const deleted = await deleteCompany(companyId);
-    console.log(deleted)
     if (deleted) {
       console.log("Company deleted successfully");
       const updatedCompanies = companies?.filter((company) => company.company_id !== companyId);
-      if(updatedCompanies){
-        setCompanies(updatedCompanies);
-      }else{
-        setCompanies(null);
-      }
+      setCompanies(updatedCompanies);
     } else {
       console.error("Failed to delete company");
     }
@@ -59,7 +59,7 @@ const CompaniesComponent = () => {
       {loading ? (
         <p>Carregando empresas...</p>
       ) : showAddForm ? (
-        <AddEmpresa />
+        <AddEmpresa existingCompany={editingCompany} />
       ) : (
         <div>
           <Grid container spacing={3} alignItems="center">
@@ -78,7 +78,7 @@ const CompaniesComponent = () => {
               </Button>
             </Grid>
             {companies?.map((company) => (
-              <Grid item key={company.name}>
+              <Grid item key={company.company_id}>
                 <Card>
                   <CardContent>
                     <img
@@ -91,6 +91,13 @@ const CompaniesComponent = () => {
                     <Typography variant="body2" color="textSecondary">
                       {company.description}
                     </Typography>
+                    <Button
+                      onClick={() => handleEditCompanyClick(company)}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Editar Empresa
+                    </Button>
                     <Button
                       onClick={() => handleDeleteCompany(company.company_id)}
                       variant="contained"
