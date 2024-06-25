@@ -47,6 +47,14 @@ export const getCompanies = async (user: string) => {
         
 };
 
+export const getAllCompanies = async () => {
+  const supabase = createClient();
+
+  return await supabase
+  .from('companies')
+  .select('*');
+};
+
 export async function addCompany(companyData: Companies) {
   const supabase = createClient();
 
