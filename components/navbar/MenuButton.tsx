@@ -1,11 +1,9 @@
 import Link from 'next/link';
 
 const pages = [
-  { name: 'Investir', href: '/investir' },
+  { name: 'Sobre Nós', href: '/sobre-nos' },
   { name: 'Como Funciona', href: '/como-funciona' },
-  { name: 'Captar', href: '/captar' },
-  { name: 'Aprenda a Investir', href: '/aprenda-a-investir' },
-  { name: 'Blog', href: '/blog' },
+  { name: 'Portifólio', href: '/portifolio' }
 ];
 
 export default function MenuButton() {
