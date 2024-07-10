@@ -5,7 +5,7 @@ import PortifolioContent from "@/components/PortifolioContent";
 export default function Index() {
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
+    <div className="flex-1 w-full flex flex-col gap-20 items-center min-h-screen">
       <Navbar/>
       <div className="w-full animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
           <PortifolioContent/>

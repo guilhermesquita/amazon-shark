@@ -112,7 +112,6 @@ export async function deleteCompany(companyId: number) {
   return true;
 }
 
-
 export async function updateCompany(companyData: Companies) {
   const supabase = createClient();
 
@@ -171,3 +170,23 @@ export async function getPhotoByCompanie(companyData: Companies): Promise<string
   }
 }
 
+export async function getBackGroundPhoto(): Promise<string | null> {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .storage
+      .from('amazonshark')
+      .createSignedUrl('FUNDO.png', 60);
+
+    if (error) {
+      console.error("Error getting signed URL:", error);
+      return null;
+    }
+
+    return data?.signedUrl || null;
+  } catch (e) {
+    console.error("Exception getting signed URL:", e);
+    return null;
+  }
+}
