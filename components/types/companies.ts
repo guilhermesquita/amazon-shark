@@ -10,4 +10,5 @@ export type Companies = {
     cep: string;
     porte: string;
     current_need: string;
+    image_url: string;
   };

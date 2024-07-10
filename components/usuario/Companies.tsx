@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddEmpresa from "../addEmpresa/AddEmpresa";
-import { getCompanies, getUser, deleteCompany } from "../actions";
+import { getCompanies, getUser, deleteCompany, getPhotoByCompanie } from "../actions";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -10,10 +10,11 @@ import CardMedia from "@mui/material/CardMedia";
 import { Companies } from "../types/companies";
 
 const CompaniesComponent = () => {
-  const [companies, setCompanies] = useState<Companies[]>([]); // Inicializado como array vazio
+  const [companies, setCompanies] = useState<Companies[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Companies | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -21,7 +22,18 @@ const CompaniesComponent = () => {
 
       const user = await getUser();
       const response = await getCompanies(user?.id ?? "");
-      setCompanies(response?.data ?? []); // Se response.data for undefined, usa array vazio
+      const companiesData = response?.data ?? [];
+      setCompanies(companiesData);
+
+      const imageUrls: { [key: number]: string } = {};
+      await Promise.all(
+        companiesData.map(async (company: Companies) => {
+          const imageUrl = await getPhotoByCompanie(company);
+          imageUrls[company.company_id] = imageUrl || "https://via.placeholder.com/150x150.png";
+        })
+      );
+      setImageUrls(imageUrls);
+
       setLoading(false);
     };
 
@@ -52,6 +64,9 @@ const CompaniesComponent = () => {
         (company) => company.company_id !== companyId
       );
       setCompanies(updatedCompanies);
+      const updatedImageUrls = { ...imageUrls };
+      delete updatedImageUrls[companyId];
+      setImageUrls(updatedImageUrls);
     } else {
       console.error("Failed to delete company");
     }
@@ -96,7 +111,7 @@ const CompaniesComponent = () => {
                   <CardMedia
                     component="img"
                     sx={{ width: 150 }}
-                    image="https://via.placeholder.com/150x150.png"
+                    image={imageUrls[company.company_id] || "https://via.placeholder.com/150x150.png"}
                     alt="Company Image"
                   />
                   <CardContent sx={{ flex: "1" }}>

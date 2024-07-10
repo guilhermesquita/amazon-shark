@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { addCompany, updateCompany, getUser } from "../actions";
+import { uploadPhoto,addCompany, updateCompany, getUser } from "../actions";
 import { Companies } from "../types/companies";
 
 interface AddEmpresaProps {
@@ -10,6 +10,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
   const [companyData, setCompanyData] = useState<Partial<Companies>>(
     existingCompany || {}
   );
+  const [file, setFile] = useState<any | null>(null);
 
   useEffect(() => {
     if (existingCompany) {
@@ -29,24 +30,45 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
+
   const handleCompanySubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-
+  
     const user = await getUser();
     if (!user?.id) {
       console.error("User ID is undefined");
       return;
     }
+  
+    if (!companyData?.name) {
+      console.error("Company name is undefined");
+      return;
+    }
+    
+    let image_url: string = '';
 
-    const companyDataWithUserId = { ...companyData, user_id: user.id };
-
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await uploadPhoto(user.id, companyData.name,formData);
+      console.log(result);
+      image_url = result.path;
+    }
+  
+    const companyDataWithUserId = { ...companyData, user_id: user.id , image_url: image_url};
+  
     let result;
     if (existingCompany) {
       result = await updateCompany(companyDataWithUserId as Companies);
     } else {
       result = await addCompany(companyDataWithUserId as Companies);
     }
-
+  
     if (result) {
       console.log("Company processed successfully:", result);
       redirectToDashboard();
@@ -146,6 +168,12 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
             placeholder="Descrição da empresa"
             value={companyData.description || ""}
             onChange={handleCompanyChange}
+            className="p-2 border rounded text-gray-500"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
             className="p-2 border rounded text-gray-500"
           />
           <button type="submit" className="p-2 bg-blue-500 text-white rounded">
