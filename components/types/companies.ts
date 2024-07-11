@@ -11,4 +11,5 @@ export type Companies = {
     porte: string;
     current_need: string;
     image_url: string;
+    youtube_link: string;
   };

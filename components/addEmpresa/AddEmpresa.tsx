@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { uploadPhoto, addCompany, updateCompany, getUser } from "../actions";
 import { Companies } from "../types/companies";
 import Popup from "../popUp/PopUp";
-import Spinner from "../Spinner/Spinner";  // Importe o componente Spinner
+import Spinner from "../Spinner/Spinner";
 
 interface AddEmpresaProps {
   existingCompany?: Companies | null;
@@ -13,7 +13,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
   const [file, setFile] = useState<any | null>(null);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [popupType, setPopupType] = useState<"success" | "error" | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);  // Adicione o estado isLoading
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (existingCompany) {
@@ -37,14 +37,14 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
 
   const handleCompanySubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setIsLoading(true);  // Ative o estado isLoading
+    setIsLoading(true);
 
     const user = await getUser();
     if (!user?.id) {
       console.error("User ID is undefined");
       setPopupMessage("Failed to get user ID");
       setPopupType("error");
-      setIsLoading(false);  // Desative o estado isLoading
+      setIsLoading(false);
       return;
     }
 
@@ -52,7 +52,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
       console.error("Company name is undefined");
       setPopupMessage("Company name is required");
       setPopupType("error");
-      setIsLoading(false);  // Desative o estado isLoading
+      setIsLoading(false);
       return;
     }
 
@@ -66,7 +66,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
         console.error(result?.error || "Failed to upload photo");
         setPopupMessage("Failed to upload photo");
         setPopupType("error");
-        setIsLoading(false);  // Desative o estado isLoading
+        setIsLoading(false);
         return;
       }
       image_url = result.path;
@@ -91,7 +91,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
       setPopupType("error");
     }
 
-    setIsLoading(false);  // Desative o estado isLoading
+    setIsLoading(false);
   };
 
   const closePopup = () => {
@@ -189,6 +189,14 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
             name="description"
             placeholder="Descrição da empresa"
             value={companyData.description || ""}
+            onChange={handleCompanyChange}
+            className="p-2 border rounded text-gray-500"
+          />
+          <input
+            type="text"
+            name="youtube_link"
+            placeholder="Link do YouTube"
+            value={companyData.youtube_link || ""}
             onChange={handleCompanyChange}
             className="p-2 border rounded text-gray-500"
           />
