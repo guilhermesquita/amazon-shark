@@ -36,7 +36,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
     }
   };
 
-  const handleCompanySubmit = async (e: { preventDefault: () => void; }) => {
+  const handleCompanySubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
   
     const user = await getUser();
@@ -49,18 +49,19 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
       console.error("Company name is undefined");
       return;
     }
-    
+  
     let image_url: string = '';
-
+  
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const result = await uploadPhoto(user.id, companyData.name,formData);
+      const isUpdate = !!existingCompany;
+      const result = await uploadPhoto(user.id, companyData.name, formData, isUpdate);
       console.log(result);
       image_url = result.path;
     }
   
-    const companyDataWithUserId = { ...companyData, user_id: user.id , image_url: image_url};
+    const companyDataWithUserId = { ...companyData, user_id: user.id, image_url: image_url };
   
     let result;
     if (existingCompany) {
@@ -76,6 +77,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
       console.error("Failed to process company");
     }
   };
+  
 
   return (
     <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">

@@ -132,16 +132,24 @@ export async function updateCompany(companyData: Companies) {
 export async function uploadPhoto(
   user_id: string,
   companyName: string,
-  photo: FormData
+  photo: FormData,
+  isUpdate: boolean = false
 ): Promise<any> {
   const supabase = createClient();
 
   try {
     const file = photo.get("file") as File;
-    const photoPath = `${user_id}/${companyName}/${file.name}`;
-    const { data, error } = await supabase.storage
-      .from("companies")
-      .upload(photoPath, file);
+    const fileExtension = file.name.split('.').pop();
+    const photoPath = `${user_id}/${companyName}/image.${fileExtension}`;
+    let data, error;
+    
+    if (isUpdate) {
+      await supabase.storage.from("companies").remove([photoPath]);
+    }
+    
+    ({ data, error } = await supabase.storage.from("companies").upload(photoPath, file, { upsert: true }));
+    
+    if (error) throw error;
     return data;
   } catch (error) {
     console.log(error);
