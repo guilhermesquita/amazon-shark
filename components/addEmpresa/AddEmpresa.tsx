@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { uploadPhoto,addCompany, updateCompany, getUser } from "../actions";
+import { uploadPhoto, addCompany, updateCompany, getUser } from "../actions";
 import { Companies } from "../types/companies";
+import Popup from "../popUp/PopUp";
+import Spinner from "../Spinner/Spinner";  // Importe o componente Spinner
 
 interface AddEmpresaProps {
   existingCompany?: Companies | null;
 }
 
 export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
-  const [companyData, setCompanyData] = useState<Partial<Companies>>(
-    existingCompany || {}
-  );
+  const [companyData, setCompanyData] = useState<Partial<Companies>>(existingCompany || {});
   const [file, setFile] = useState<any | null>(null);
+  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [popupType, setPopupType] = useState<"success" | "error" | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);  // Adicione o estado isLoading
 
   useEffect(() => {
     if (existingCompany) {
       setCompanyData(existingCompany);
     }
   }, [existingCompany]);
-
-  const redirectToDashboard = () => {
-    window.location.href = "/dashboard";
-  };
 
   const handleCompanyChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -38,46 +37,67 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
 
   const handleCompanySubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-  
+    setIsLoading(true);  // Ative o estado isLoading
+
     const user = await getUser();
     if (!user?.id) {
       console.error("User ID is undefined");
+      setPopupMessage("Failed to get user ID");
+      setPopupType("error");
+      setIsLoading(false);  // Desative o estado isLoading
       return;
     }
-  
+
     if (!companyData?.name) {
       console.error("Company name is undefined");
+      setPopupMessage("Company name is required");
+      setPopupType("error");
+      setIsLoading(false);  // Desative o estado isLoading
       return;
     }
-  
+
     let image_url: string = '';
-  
+
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const isUpdate = !!existingCompany;
-      const result = await uploadPhoto(user.id, companyData.name, formData, isUpdate);
-      console.log(result);
+      const result = await uploadPhoto(user.id, companyData.name, formData);
+      if (!result || result.error) {
+        console.error(result?.error || "Failed to upload photo");
+        setPopupMessage("Failed to upload photo");
+        setPopupType("error");
+        setIsLoading(false);  // Desative o estado isLoading
+        return;
+      }
       image_url = result.path;
     }
-  
+
     const companyDataWithUserId = { ...companyData, user_id: user.id, image_url: image_url };
-  
+
     let result;
     if (existingCompany) {
       result = await updateCompany(companyDataWithUserId as Companies);
     } else {
       result = await addCompany(companyDataWithUserId as Companies);
     }
-  
+
     if (result) {
       console.log("Company processed successfully:", result);
-      redirectToDashboard();
+      setPopupMessage("Company processed successfully");
+      setPopupType("success");
     } else {
       console.error("Failed to process company");
+      setPopupMessage("Failed to process company");
+      setPopupType("error");
     }
+
+    setIsLoading(false);  // Desative o estado isLoading
   };
-  
+
+  const closePopup = () => {
+    setPopupMessage(null);
+    setPopupType(null);
+  };
 
   return (
     <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
@@ -183,6 +203,10 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
           </button>
         </form>
       </main>
+      {popupMessage && popupType && (
+        <Popup message={popupMessage} onClose={closePopup} type={popupType} />
+      )}
+      {isLoading && <Spinner />}
     </div>
   );
 }
