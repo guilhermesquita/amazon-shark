@@ -1,15 +1,15 @@
 export type Companies = {
     company_id: number;
     user_id: string;
-    desire: string;
     name: string;
     cnpj: string;
     sector: string;
-    social_links: string;
     description: string;
-    cep: string;
-    porte: string;
-    current_need: string;
+    endereco: string;
+    social_links: string;
+    financeiro: string;
+    objetivo: string;
     image_url: string;
     youtube_link: string;
+    pitch: string;
   };

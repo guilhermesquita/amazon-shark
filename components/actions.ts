@@ -157,6 +157,62 @@ export async function uploadPhoto(
   }
 }
 
+export async function uploadPitch(
+  user_id: string,
+  companyName: string,
+  pitch: FormData,
+  isUpdate: boolean = false
+): Promise<any> {
+  const supabase = createClient();
+
+  try {
+    const file = pitch.get("file") as File;
+    const fileExtension = file.name.split('.').pop();
+    const pitchPath = `${user_id}/${companyName}/pitch.${fileExtension}`;
+    let data, error;
+    
+    if (isUpdate) {
+      await supabase.storage.from("companies").remove([pitchPath]);
+    }
+    
+    ({ data, error } = await supabase.storage.from("companies").upload(pitchPath, file, { upsert: true }));
+    
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
+export async function uploadFinanceiro(
+  user_id: string,
+  companyName: string,
+  financeiro: FormData,
+  isUpdate: boolean = false
+): Promise<any> {
+  const supabase = createClient();
+
+  try {
+    const file = financeiro.get("file") as File;
+    const fileExtension = file.name.split('.').pop();
+    const financeiroPath = `${user_id}/${companyName}/financeiro.${fileExtension}`;
+    let data, error;
+    
+    if (isUpdate) {
+      await supabase.storage.from("companies").remove([financeiroPath]);
+    }
+    
+    ({ data, error } = await supabase.storage.from("companies").upload(financeiroPath, file, { upsert: true }));
+    
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}
+
 export async function getPhotoByCompanie(companyData: Companies): Promise<string | null> {
   const supabase = createClient();
 
@@ -165,6 +221,48 @@ export async function getPhotoByCompanie(companyData: Companies): Promise<string
       .storage
       .from('companies')
       .createSignedUrl(companyData.image_url, 60);
+
+    if (error) {
+      console.error("Error getting signed URL:", error);
+      return null;
+    }
+
+    return data?.signedUrl || null;
+  } catch (e) {
+    console.error("Exception getting signed URL:", e);
+    return null;
+  }
+}
+
+export async function getPitchByCompanie(companyData: Companies): Promise<string | null> {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .storage
+      .from('companies')
+      .createSignedUrl(companyData.pitch, 60);
+
+    if (error) {
+      console.error("Error getting signed URL:", error);
+      return null;
+    }
+
+    return data?.signedUrl || null;
+  } catch (e) {
+    console.error("Exception getting signed URL:", e);
+    return null;
+  }
+}
+
+export async function getFinanceiroByCompanie(companyData: Companies): Promise<string | null> {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .storage
+      .from('companies')
+      .createSignedUrl(companyData.financeiro, 60);
 
     if (error) {
       console.error("Error getting signed URL:", error);

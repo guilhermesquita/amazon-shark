@@ -3,18 +3,8 @@ import React, { useState, useEffect } from "react";
 import { getAllCompanies, getUser, getPhotoByCompanie } from "./actions";
 import Spinner from "./Spinner/Spinner";
 import { Companies } from "./types/companies";
-import { FaBuilding, FaIndustry, FaRegBuilding, FaTasks, FaGlobe, FaBriefcase } from 'react-icons/fa';
-import { GiHealthNormal } from "react-icons/gi";
 import CompanyCard from "./EmpresaCard/EmpresaCard";
-
-const sectorIcons: { [key: string]: JSX.Element } = {
-  "Tecnologia": <FaGlobe />,
-  "Financeiro": <FaBriefcase />,
-  "Saúde": <GiHealthNormal />,
-  "Real Estate": <FaRegBuilding />,
-  "Services": <FaTasks />,
-  "Other": <FaBuilding />
-};
+import CompanyDetails from "../components/EmpresaDetails/EmpresaDetails"; 
 
 export default function UserContent() {
   const [userFullName, setUserFullName] = useState<string | null>(null);
@@ -22,6 +12,7 @@ export default function UserContent() {
   const [loading, setLoading] = useState(true);
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
+  const [selectedCompany, setSelectedCompany] = useState<Companies | null>(null);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -55,6 +46,11 @@ export default function UserContent() {
     fetchUserData();
   }, []);
 
+  const handleViewDetails = async (company: Companies) => {
+    setSelectedCompany(company);
+    const imageUrl = await getPhotoByCompanie(company);
+  };
+  
   if (loading) {
     return <Spinner />;
   }
@@ -75,22 +71,34 @@ export default function UserContent() {
             onClick={() => setSelectedSector(sector)}
             className={`flex items-center gap-2 px-4 py-2 border rounded ${selectedSector === sector ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
           >
-            {sectorIcons[sector] || <FaBuilding />} {sector}
+            {sector}
           </button>
         ))}
         <button 
           onClick={() => setSelectedSector(null)}
           className={`flex items-center gap-2 px-4 py-2 border rounded ${selectedSector === null ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
         >
-          <FaBuilding /> Todos
+          Todos
         </button>
       </div>
       <h2 className="text-xl font-medium">Empresas {selectedSector ? `do setor ${selectedSector}` : ''}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredCompanies.map(company => (
-          <CompanyCard key={company.company_id} company={company} imageUrl={imageUrls[company.company_id]} />
+          <CompanyCard
+            key={company.company_id}
+            company={company}
+            imageUrl={imageUrls[company.company_id]}
+            onViewDetails={() => handleViewDetails(company)}
+          />
         ))}
       </div>
+
+      {selectedCompany && (
+        <CompanyDetails
+          company={selectedCompany}
+          onClose={() => setSelectedCompany(null)}
+        />
+      )}
     </div>
   );
 }

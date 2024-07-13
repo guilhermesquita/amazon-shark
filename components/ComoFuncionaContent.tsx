@@ -26,14 +26,14 @@ function ComoFuncionaContent() {
                 <AiOutlinePicture size={50} className="mb-4"/>
                 <h2 className="text-xl font-bold">Inclua anexos</h2>
                 <p className="mt-2 text-lg text-center">
-                  Inclua anexos (demonstrativos, plano de negócio, etc)
+                  Inclua anexos (demonstrativos, plano de negócio, etc).
                 </p>
               </div>
               <div className="flex flex-col items-center">
                 <CiFileOn size={50} className="mb-4"/>
                 <h2 className="text-xl font-bold">Coloque o pitch</h2>
                 <p className="mt-2 text-lg text-center">
-                  Coloque o pitch. (Video de apresentação)
+                  Coloque o pitch.
                 </p>
               </div>
               <div className="flex flex-col items-center">
