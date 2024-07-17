@@ -18,6 +18,7 @@ export async function getUser(): Promise<UserMetadata | null> {
     const metadata: UserMetadata = {
       email: user.email,
       id: user.id,
+      documents: user.identities,
       user_metadata: {
         fullName: user.user_metadata.fullName,
       },
