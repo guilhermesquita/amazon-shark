@@ -38,6 +38,11 @@ export async function signOut() {
   return redirect("/login");
 }
 
+export async function getClientById(id: string) {
+  const supabase = createClient();
+  return await supabase.from("profiles").select("*").eq('id', id);
+}
+
 export const getCompanieByName = async (name: string) => {
   const supabase = createClient();
 
@@ -76,9 +81,9 @@ export async function deleteCompany(companyId: number) {
   const supabase = createClient();
 
   const { data: companyData, error: fetchError } = await supabase
-    .from('companies')
-    .select('image_url')
-    .eq('company_id', companyId)
+    .from("companies")
+    .select("image_url")
+    .eq("company_id", companyId)
     .single();
 
   if (fetchError) {
@@ -89,9 +94,8 @@ export async function deleteCompany(companyId: number) {
   const imageUrl = companyData?.image_url;
 
   if (imageUrl) {
-    const { error: storageError } = await supabase
-      .storage
-      .from('companies')
+    const { error: storageError } = await supabase.storage
+      .from("companies")
       .remove([imageUrl]);
 
     if (storageError) {
@@ -101,9 +105,9 @@ export async function deleteCompany(companyId: number) {
   }
 
   const { error: deleteError } = await supabase
-    .from('companies')
+    .from("companies")
     .delete()
-    .eq('company_id', companyId);
+    .eq("company_id", companyId);
 
   if (deleteError) {
     console.error("Failed to delete company:", deleteError.message);
@@ -140,16 +144,18 @@ export async function uploadPhoto(
 
   try {
     const file = photo.get("file") as File;
-    const fileExtension = file.name.split('.').pop();
+    const fileExtension = file.name.split(".").pop();
     const photoPath = `${user_id}/${companyName}/image.${fileExtension}`;
     let data, error;
-    
+
     if (isUpdate) {
       await supabase.storage.from("companies").remove([photoPath]);
     }
-    
-    ({ data, error } = await supabase.storage.from("companies").upload(photoPath, file, { upsert: true }));
-    
+
+    ({ data, error } = await supabase.storage
+      .from("companies")
+      .upload(photoPath, file, { upsert: true }));
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -168,16 +174,18 @@ export async function uploadPitch(
 
   try {
     const file = pitch.get("file") as File;
-    const fileExtension = file.name.split('.').pop();
+    const fileExtension = file.name.split(".").pop();
     const pitchPath = `${user_id}/${companyName}/pitch.${fileExtension}`;
     let data, error;
-    
+
     if (isUpdate) {
       await supabase.storage.from("companies").remove([pitchPath]);
     }
-    
-    ({ data, error } = await supabase.storage.from("companies").upload(pitchPath, file, { upsert: true }));
-    
+
+    ({ data, error } = await supabase.storage
+      .from("companies")
+      .upload(pitchPath, file, { upsert: true }));
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -196,16 +204,18 @@ export async function uploadFinanceiro(
 
   try {
     const file = financeiro.get("file") as File;
-    const fileExtension = file.name.split('.').pop();
+    const fileExtension = file.name.split(".").pop();
     const financeiroPath = `${user_id}/${companyName}/financeiro.${fileExtension}`;
     let data, error;
-    
+
     if (isUpdate) {
       await supabase.storage.from("companies").remove([financeiroPath]);
     }
-    
-    ({ data, error } = await supabase.storage.from("companies").upload(financeiroPath, file, { upsert: true }));
-    
+
+    ({ data, error } = await supabase.storage
+      .from("companies")
+      .upload(financeiroPath, file, { upsert: true }));
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -214,13 +224,14 @@ export async function uploadFinanceiro(
   }
 }
 
-export async function getPhotoByCompanie(companyData: Companies): Promise<string | null> {
+export async function getPhotoByCompanie(
+  companyData: Companies
+): Promise<string | null> {
   const supabase = createClient();
 
   try {
-    const { data, error } = await supabase
-      .storage
-      .from('companies')
+    const { data, error } = await supabase.storage
+      .from("companies")
       .createSignedUrl(companyData.image_url, 60);
 
     if (error) {
@@ -235,13 +246,14 @@ export async function getPhotoByCompanie(companyData: Companies): Promise<string
   }
 }
 
-export async function getPitchByCompanie(companyData: Companies): Promise<string | null> {
+export async function getPitchByCompanie(
+  companyData: Companies
+): Promise<string | null> {
   const supabase = createClient();
 
   try {
-    const { data, error } = await supabase
-      .storage
-      .from('companies')
+    const { data, error } = await supabase.storage
+      .from("companies")
       .createSignedUrl(companyData.pitch, 60);
 
     if (error) {
@@ -256,13 +268,14 @@ export async function getPitchByCompanie(companyData: Companies): Promise<string
   }
 }
 
-export async function getFinanceiroByCompanie(companyData: Companies): Promise<string | null> {
+export async function getFinanceiroByCompanie(
+  companyData: Companies
+): Promise<string | null> {
   const supabase = createClient();
 
   try {
-    const { data, error } = await supabase
-      .storage
-      .from('companies')
+    const { data, error } = await supabase.storage
+      .from("companies")
       .createSignedUrl(companyData.financeiro, 60);
 
     if (error) {
@@ -281,10 +294,9 @@ export async function getBackGroundPhoto(): Promise<string | null> {
   const supabase = createClient();
 
   try {
-    const { data, error } = await supabase
-      .storage
-      .from('amazonshark')
-      .createSignedUrl('FUNDO.png', 60);
+    const { data, error } = await supabase.storage
+      .from("amazonshark")
+      .createSignedUrl("FUNDO.png", 60);
 
     if (error) {
       console.error("Error getting signed URL:", error);
