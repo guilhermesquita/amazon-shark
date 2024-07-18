@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { UserMetadata } from "./types/user";
 import { Companies } from "./types/companies";
 import { Conversations } from "./types/conversations";
+import { Messages } from "./types/messages";
 
 // interface dtoConversation {
 //   profile1_id: string;
@@ -306,12 +307,11 @@ export async function getBackGroundPhoto(): Promise<string | null> {
 
     if (error) {
       console.error("Error getting signed URL:", error);
-      return null;
     }
 
     return data?.signedUrl || null;
   } catch (e) {
-    console.error("Exception getting signed URL:", e);
+    console.log("Exception getting signed URL:", e);
     return null;
   }
 }
@@ -329,4 +329,44 @@ export async function createConversation(conversationData: Conversations){
 export async function getAllMessages(conversationId: number){
   const supabase = createClient();
   return supabase.from("messages").select("*").eq("conversation_id", conversationId)
+}
+
+// export const subscribeToMessages = () => {
+//   const supabase = createClient();
+//   supabase.channel('messages-component')
+//   .on('postgres_changes', {
+//     event: '*',
+//     schema: 'public',
+//     table: 'messages',
+//   }, (payload:any) => {
+//     console.log(payload)
+//   }).subscribe()
+// }
+
+export async function sendMessage(messageData: Messages) {
+  const supabase = createClient();
+  
+  try {
+    const { data, error } = await supabase
+      .from("messages")
+      .insert(
+        {
+          sender_id: messageData.sender_id,
+          content: messageData.content,
+          conversation_id: 1
+        }
+      );
+
+    if (error) {
+      console.log("Erro ao enviar mensagem:", error.message);
+      return null;
+    }
+
+    console.log("Mensagem enviada com sucesso:", data);
+
+    return data;
+  } catch (error: any) {
+    console.log("Erro ao enviar mensagem:", error.message);
+    return null;
+  }
 }

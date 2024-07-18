@@ -1,8 +1,5 @@
 export type Messages = {
-    id: number;
-    created_at: string;
-    updated_at: string;
-    sender_ir: string;
+    sender_id: string;
     content: string;
     conversation_id: number;
 }

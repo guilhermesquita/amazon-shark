@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { getAllMessages } from "../actions";
+import { getAllMessages, sendMessage } from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 
 interface Message {
@@ -8,26 +8,26 @@ interface Message {
 }
 
 const Chat: React.FC = () => {
-  const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(true);
+  const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { client } = useClient() as ClientContextType;
 
-  useEffect(() => {
+  useEffect(() => {    
     async function fetchUser() {
       const fetchedUser = await getAllMessages(1);
 
-      let teste = []
+      let teste = [];
 
-      if(fetchedUser.data){
+      if (fetchedUser.data) {
         for (let item of fetchedUser.data) {
           const message = {
             text: item.content,
             sender: item.sender_id,
           };
           teste.push(message);
-          setMessages(teste)
+          setMessages(teste);
         }
       }
       console.log(fetchedUser.data);
@@ -47,8 +47,15 @@ const Chat: React.FC = () => {
     }
   };
 
-  const addUserMessage = (message: string) => {
-    setMessages([...messages, { text: message, sender: "user" }]);
+  const addUserMessage = async (message: string) => {
+    if (client?.id) {
+      setMessages([...messages, { text: message, sender: client.id }]);
+      await sendMessage({
+        content: message, 
+        conversation_id: 1,  
+        sender_id: client.id ?? '0',
+      });
+    }
   };
 
   useEffect(() => {

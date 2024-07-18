@@ -18,7 +18,7 @@ export const createPaymentPix = async (bodyRequest: requestBodyPost) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${process.env.BEARER_TOKEN_PIX}`,
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_BEARER_TOKEN_PIX}`,
         "X-Idempotency-Key": id,
       },
     };
