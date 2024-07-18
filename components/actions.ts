@@ -5,6 +5,12 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { UserMetadata } from "./types/user";
 import { Companies } from "./types/companies";
+import { Conversations } from "./types/conversations";
+
+// interface dtoConversation {
+//   profile1_id: string;
+//   profile2_id: string;
+// }
 
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
@@ -308,4 +314,19 @@ export async function getBackGroundPhoto(): Promise<string | null> {
     console.error("Exception getting signed URL:", e);
     return null;
   }
+}
+
+export async function getConversationsExists(profile1_id: string, profile2_id: string){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").eq("profile1_id", profile1_id).eq("profile2_id", profile2_id)
+}
+
+export async function createConversation(conversationData: Conversations){
+  const supabase = createClient();
+  supabase.from("conversations").insert([conversationData])
+}
+
+export async function getAllMessages(conversationId: number){
+  const supabase = createClient();
+  return supabase.from("messages").select("*").eq("conversation_id", conversationId)
 }
