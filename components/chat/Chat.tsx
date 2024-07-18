@@ -1,6 +1,7 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useRef, useCallback } from "react";
 import { getAllMessages, sendMessage } from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
+import { createClient } from "@/utils/supabase/client";
 
 interface Message {
   text: string;
@@ -11,48 +12,78 @@ const Chat: React.FC = () => {
   const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-
   const { client } = useClient() as ClientContextType;
+  const chatboxRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {    
-    async function fetchUser() {
-      const fetchedUser = await getAllMessages(1);
-
-      let teste = [];
-
-      if (fetchedUser.data) {
-        for (let item of fetchedUser.data) {
-          const message = {
-            text: item.content,
-            sender: item.sender_id,
-          };
-          teste.push(message);
-          setMessages(teste);
-        }
+  useEffect(() => {
+    async function fetchMessages() {
+      const fetchedMessages = await getAllMessages(1);
+      if (fetchedMessages.data) {
+        const formattedMessages = fetchedMessages.data.map((item: any) => ({
+          text: item.content,
+          sender: item.sender_id,
+        }));
+        setMessages(formattedMessages);
       }
-      console.log(fetchedUser.data);
     }
-
-    fetchUser();
+    fetchMessages();
   }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel('messages-component')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload: any) => {
+          const newMessage = {
+            text: payload.new.content,
+            sender: payload.new.sender_id,
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (chatboxRef.current) {
+      chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const toggleChatbox = () => {
     setIsChatboxOpen(!isChatboxOpen);
+    setTimeout(() => {
+      if (chatboxRef.current) {
+        chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+      }
+    }, 0);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
       addUserMessage(userMessage);
       setUserMessage("");
     }
-  };
+  }, [userMessage]);
 
   const addUserMessage = async (message: string) => {
     if (client?.id) {
-      setMessages([...messages, { text: message, sender: client.id }]);
+      // const newMessage = { text: message, sender: client.id };
+      // setMessages((prevMessages) => [...prevMessages, newMessage]);
       await sendMessage({
-        content: message, 
-        conversation_id: 1,  
+        content: message,
+        conversation_id: 1,
         sender_id: client.id ?? '0',
       });
     }
@@ -68,7 +99,7 @@ const Chat: React.FC = () => {
     return () => {
       window.removeEventListener("keyup", handleKeyPress);
     };
-  }, [userMessage, messages]);
+  }, [handleSendMessage]);
 
   return (
     <div>
@@ -125,7 +156,7 @@ const Chat: React.FC = () => {
               </svg>
             </button>
           </div>
-          <div id="chatbox" className="p-4 h-80 overflow-y-auto">
+          <div id="chatbox" className="p-4 h-80 overflow-y-auto" ref={chatboxRef}>
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -151,7 +182,7 @@ const Chat: React.FC = () => {
               type="text"
               placeholder="Type a message"
               autoComplete="off"
-              className="w-full px-3 py-2 border rounded-l-md outline-none bg-[#0e0d0d]"
+              className="w-full px-3 py-2 border rounded-l-md outline-none bg-[#0e0d0d] text-white"
               value={userMessage}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setUserMessage(e.target.value)

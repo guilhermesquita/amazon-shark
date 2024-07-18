@@ -331,18 +331,6 @@ export async function getAllMessages(conversationId: number){
   return supabase.from("messages").select("*").eq("conversation_id", conversationId)
 }
 
-// export const subscribeToMessages = () => {
-//   const supabase = createClient();
-//   supabase.channel('messages-component')
-//   .on('postgres_changes', {
-//     event: '*',
-//     schema: 'public',
-//     table: 'messages',
-//   }, (payload:any) => {
-//     console.log(payload)
-//   }).subscribe()
-// }
-
 export async function sendMessage(messageData: Messages) {
   const supabase = createClient();
   
