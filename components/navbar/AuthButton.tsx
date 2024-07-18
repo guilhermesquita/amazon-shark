@@ -43,7 +43,6 @@ export default function AuthButton() {
         return (
           <Link
             href="/verified"
-            onClick={() => alert(client?.full_name)}
             className="flex items-center gap-2 
           py-2 px-3 rounded-md no-underline duration-300
           bg-[#0c6350] hover:bg-[#0a4b3d]"

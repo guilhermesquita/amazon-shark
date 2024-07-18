@@ -5,6 +5,13 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { UserMetadata } from "./types/user";
 import { Companies } from "./types/companies";
+import { Conversations } from "./types/conversations";
+import { Messages } from "./types/messages";
+
+// interface dtoConversation {
+//   profile1_id: string;
+//   profile2_id: string;
+// }
 
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
@@ -300,12 +307,54 @@ export async function getBackGroundPhoto(): Promise<string | null> {
 
     if (error) {
       console.error("Error getting signed URL:", error);
-      return null;
     }
 
     return data?.signedUrl || null;
   } catch (e) {
-    console.error("Exception getting signed URL:", e);
+    console.log("Exception getting signed URL:", e);
+    return null;
+  }
+}
+
+export async function getConversationsExists(profile1_id: string, profile2_id: string){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").eq("profile1_id", profile1_id).eq("profile2_id", profile2_id)
+}
+
+export async function createConversation(conversationData: Conversations){
+  const supabase = createClient();
+  supabase.from("conversations").insert([conversationData])
+}
+
+export async function getAllMessages(conversationId: number){
+  const supabase = createClient();
+  return supabase.from("messages").select("*").eq("conversation_id", conversationId)
+}
+
+export async function sendMessage(messageData: Messages) {
+  const supabase = createClient();
+  
+  try {
+    const { data, error } = await supabase
+      .from("messages")
+      .insert(
+        {
+          sender_id: messageData.sender_id,
+          content: messageData.content,
+          conversation_id: 1
+        }
+      );
+
+    if (error) {
+      console.log("Erro ao enviar mensagem:", error.message);
+      return null;
+    }
+
+    console.log("Mensagem enviada com sucesso:", data);
+
+    return data;
+  } catch (error: any) {
+    console.log("Erro ao enviar mensagem:", error.message);
     return null;
   }
 }
