@@ -368,7 +368,7 @@ export async function sendMessage(messageData: MessagesDTO) {
         {
           sender_id: messageData.sender_id,
           content: messageData.content,
-          conversation_id: 1
+          conversation_id: messageData.conversation_id
         }
       );
 

@@ -33,14 +33,32 @@ const Chat: React.FC<props> = ({ user_id }) => {
 
   useEffect(() => {
     async function fetchMessages() {
-      const fetchedMessages = await getAllMessages(35);
-      if (fetchedMessages.data) {
-        const formattedMessages = fetchedMessages.data.map((item: any) => ({
-          text: item.content,
-          sender: item.sender_id,
-        }));
-        setMessages(formattedMessages);
+      const conversation = await getConversationsExists(
+        client?.id as string,
+        user_id
+      );
+      const lenConversation = conversation.data?.length as number;
+      if (lenConversation > 0 && conversation.data) {
+        const idConversation = conversation.data[0].id;
+        const fetchedMessages = await getAllMessages(idConversation);
+        if (fetchedMessages.data) {
+          console.log(fetchedMessages.data);
+          const formattedMessages = fetchedMessages.data.map((item: any) => ({
+            text: item.content,
+            sender: item.sender_id,
+          }));
+          setMessages(formattedMessages);
+        }
       }
+
+      // const fetchedMessages = await getAllMessages(35);
+      // if (fetchedMessages.data) {
+      //   const formattedMessages = fetchedMessages.data.map((item: any) => ({
+      //     text: item.content,
+      //     sender: item.sender_id,
+      //   }));
+      //   setMessages(formattedMessages);
+      // }
     }
     fetchMessages();
   }, []);
@@ -78,25 +96,25 @@ const Chat: React.FC<props> = ({ user_id }) => {
   }, [messages]);
 
   const toggleChatbox = async () => {
-    // const clientId = client?.id as string;
-    // const findConversations = await getConversationsExists(clientId, user_id);
-    // const ConversationLen = findConversations.data?.length as number;
-    // if (ConversationLen === 0) {
-    //   await createConversation({ profile1_id: clientId, profile2_id: user_id });
+    const clientId = client?.id as string;
+    const findConversations = await getConversationsExists(clientId, user_id);
+    const ConversationLen = findConversations.data?.length as number;
+    if (ConversationLen === 0) {
+      await createConversation({ profile1_id: clientId, profile2_id: user_id });
 
+    }
+    //   const findConversations = await getConversationsExists(clientId, user_id);
+    //   const arr = findConversations.data as Messages[];
+    //   const idConversation = arr[0].id;
+    //   const fetchedMessages = await getAllMessages(idConversation);
+    //   if (fetchedMessages.data) {
+    //     const formattedMessages = fetchedMessages.data.map((item: any) => ({
+    //       text: item.content,
+    //       sender: item.sender_id,
+    //     }));
+    //     setMessages(formattedMessages);
+    //   }
     // }
-    // //   const findConversations = await getConversationsExists(clientId, user_id);
-    // //   const arr = findConversations.data as Messages[];
-    // //   const idConversation = arr[0].id;
-    // //   const fetchedMessages = await getAllMessages(idConversation);
-    // //   if (fetchedMessages.data) {
-    // //     const formattedMessages = fetchedMessages.data.map((item: any) => ({
-    // //       text: item.content,
-    // //       sender: item.sender_id,
-    // //     }));
-    // //     setMessages(formattedMessages);
-    // //   }
-    // // }
     setIsChatboxOpen(!isChatboxOpen);
     setTimeout(() => {
       if (chatboxRef.current) {
@@ -107,6 +125,7 @@ const Chat: React.FC<props> = ({ user_id }) => {
 
   const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
+      console.log(userMessage);
       addUserMessage(userMessage);
       setUserMessage("");
     }
@@ -114,13 +133,22 @@ const Chat: React.FC<props> = ({ user_id }) => {
 
   const addUserMessage = async (message: string) => {
     if (client?.id) {
-      const newMessage = { text: message, sender: client.id };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      await sendMessage({
-        content: message,
-        conversation_id: 1,
-        sender_id: client.id ?? "0",
-      });
+      const conversation = await getConversationsExists(
+        client?.id as string,
+        user_id
+      );
+      const lenConversation = conversation.data?.length as number;
+
+      if (lenConversation > 0 && conversation.data) {
+        const idConversation = conversation.data[0].id;
+        // const newMessage = { text: message, sender: client.id };
+        // setMessages((prevMessages) => [...prevMessages, newMessage]);
+        await sendMessage({
+          content: message,
+          conversation_id: idConversation,
+          sender_id: client.id ?? "0",
+        });
+      }
     }
   };
 
