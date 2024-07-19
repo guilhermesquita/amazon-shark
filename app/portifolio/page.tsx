@@ -12,7 +12,7 @@ export default function Index() {
       <div className="w-full animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
           <PortifolioContent/>
       </div>
-      <Chat/>
+      {/* <Chat/> */}
       <Footer/>
     </div>
   );

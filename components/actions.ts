@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { UserMetadata } from "./types/user";
 import { Companies } from "./types/companies";
 import { Conversations } from "./types/conversations";
-import { Messages } from "./types/messages";
+import { MessagesDTO } from "./types/dto/messagesDTO";
 
 // interface dtoConversation {
 //   profile1_id: string;
@@ -316,14 +316,41 @@ export async function getBackGroundPhoto(): Promise<string | null> {
   }
 }
 
-export async function getConversationsExists(profile1_id: string, profile2_id: string){
+export async function getConversationsExists(sender: string, recipient: string){
   const supabase = createClient();
-  return supabase.from("conversations").select("*").eq("profile1_id", profile1_id).eq("profile2_id", profile2_id)
+  return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient)
 }
 
 export async function createConversation(conversationData: Conversations){
   const supabase = createClient();
-  supabase.from("conversations").insert([conversationData])
+  try {
+    const { data, error } = await supabase
+      .from("conversations")
+      .insert(
+        { 
+          profile1_id: conversationData.profile1_id,
+          profile2_id: conversationData.profile2_id
+        }
+      );
+
+    if (error) {
+      console.log("Erro ao enviar mensagem:", error.message);
+      return null;
+    }
+
+    console.log("Mensagem enviada com sucesso:", data);
+
+    return data;
+  } catch (error: any) {
+    console.log("Erro ao enviar mensagem:", error.message);
+    return null;
+  }
+
+  
+  // supabase.from("conversations").insert({
+  //   profile1_id: conversationData.profile1_id,
+  //   profile2_id: conversationData.profile2_id,
+  // })
 }
 
 export async function getAllMessages(conversationId: number){
@@ -331,7 +358,7 @@ export async function getAllMessages(conversationId: number){
   return supabase.from("messages").select("*").eq("conversation_id", conversationId)
 }
 
-export async function sendMessage(messageData: Messages) {
+export async function sendMessage(messageData: MessagesDTO) {
   const supabase = createClient();
   
   try {
