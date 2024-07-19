@@ -13,18 +13,17 @@ import {
 } from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { createClient } from "@/utils/supabase/client";
-import { Messages } from "../types/messages";
 
 interface Message {
   text: string;
   sender: string;
 }
 
-type props = {
+type Props = {
   user_id: string;
 };
 
-const Chat: React.FC<props> = ({ user_id }) => {
+const Chat: React.FC<Props> = ({ user_id }) => {
   const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -37,12 +36,11 @@ const Chat: React.FC<props> = ({ user_id }) => {
         client?.id as string,
         user_id
       );
-      const lenConversation = conversation.data?.length as number;
-      if (lenConversation > 0 && conversation.data) {
+      console.log(conversation)
+      if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
         const fetchedMessages = await getAllMessages(idConversation);
         if (fetchedMessages.data) {
-          console.log(fetchedMessages.data);
           const formattedMessages = fetchedMessages.data.map((item: any) => ({
             text: item.content,
             sender: item.sender_id,
@@ -50,15 +48,6 @@ const Chat: React.FC<props> = ({ user_id }) => {
           setMessages(formattedMessages);
         }
       }
-
-      // const fetchedMessages = await getAllMessages(35);
-      // if (fetchedMessages.data) {
-      //   const formattedMessages = fetchedMessages.data.map((item: any) => ({
-      //     text: item.content,
-      //     sender: item.sender_id,
-      //   }));
-      //   setMessages(formattedMessages);
-      // }
     }
     fetchMessages();
   }, []);
@@ -90,6 +79,31 @@ const Chat: React.FC<props> = ({ user_id }) => {
   }, []);
 
   useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("conversations-component")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+        },
+        (payload: any) => {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            // fetchMessages();
+            console.log(payload)
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
     if (chatboxRef.current) {
       chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
     }
@@ -97,35 +111,30 @@ const Chat: React.FC<props> = ({ user_id }) => {
 
   const toggleChatbox = async () => {
     const clientId = client?.id as string;
-    const findConversations = await getConversationsExists(clientId, user_id);
-    const ConversationLen = findConversations.data?.length as number;
-    if (ConversationLen === 0) {
-      await createConversation({ profile1_id: clientId, profile2_id: user_id });
-
+    const conversationExists = await ensureConversationExists(clientId, user_id);
+    if (conversationExists) {
+      setIsChatboxOpen(!isChatboxOpen);
+      setTimeout(() => {
+        if (chatboxRef.current) {
+          chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+        }
+      }, 0);
+    } else {
+      alert('Já existe uma conversa ativa.');
     }
-    //   const findConversations = await getConversationsExists(clientId, user_id);
-    //   const arr = findConversations.data as Messages[];
-    //   const idConversation = arr[0].id;
-    //   const fetchedMessages = await getAllMessages(idConversation);
-    //   if (fetchedMessages.data) {
-    //     const formattedMessages = fetchedMessages.data.map((item: any) => ({
-    //       text: item.content,
-    //       sender: item.sender_id,
-    //     }));
-    //     setMessages(formattedMessages);
-    //   }
-    // }
-    setIsChatboxOpen(!isChatboxOpen);
-    setTimeout(() => {
-      if (chatboxRef.current) {
-        chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
-      }
-    }, 0);
+  };
+
+  const ensureConversationExists = async (clientId: string, userId: string): Promise<boolean> => {
+    const conversation = await getConversationsExists(clientId, userId);
+    if (!conversation.data?.length) {
+      await createConversation({ profile1_id: clientId, profile2_id: userId });
+      return true;
+    }
+    return false;
   };
 
   const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
-      console.log(userMessage);
       addUserMessage(userMessage);
       setUserMessage("");
     }
@@ -137,12 +146,8 @@ const Chat: React.FC<props> = ({ user_id }) => {
         client?.id as string,
         user_id
       );
-      const lenConversation = conversation.data?.length as number;
-
-      if (lenConversation > 0 && conversation.data) {
+      if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
-        // const newMessage = { text: message, sender: client.id };
-        // setMessages((prevMessages) => [...prevMessages, newMessage]);
         await sendMessage({
           content: message,
           conversation_id: idConversation,
@@ -163,7 +168,6 @@ const Chat: React.FC<props> = ({ user_id }) => {
       window.removeEventListener("keyup", handleKeyPress);
     };
   }, [handleSendMessage]);
-
   return (
     <div>
       <div className="mt-5">
