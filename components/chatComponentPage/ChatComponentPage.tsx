@@ -1,27 +1,47 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getConversationsSendedAll, getProfileById } from "../actions";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  getAllMessages,
+  getConversationsExists,
+  getConversationsSendedAll,
+  getProfileById,
+  sendMessage,
+} from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { MdOutlineVerified } from "react-icons/md";
+import { createClient } from "@/utils/supabase/client";
 
 type contactTypes = {
+  id: string;
   name: string;
   avatar: string;
   verified: boolean;
 };
 
+interface Message {
+  text: string;
+  sender: string;
+}
+
 const ChatWeb: React.FC = () => {
   const { client } = useClient() as ClientContextType;
 
   const [contacts, setContacts] = useState<contactTypes[] | null>(null);
-  // const [verified, setVerified] = useState(false);
+  const [userMessage, setUserMessage] = useState<string>("");
 
-   const [selectedContactIndex, setSelectedContactIndex] = useState<number | null>(null);
+  const [selectedContactIndex, setSelectedContactIndex] = useState<
+    number | null
+  >(null);
+  const chatboxRef = useRef<HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedContactId, setSelectedContactId] = useState<string | null>(
+    null
+  );
 
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
 
   useEffect(() => {
-    async function fetchMessages() {
+    async function fetchConversations() {
       if (client?.id) {
         const propostaChat = await getConversationsSendedAll(client.id);
         const data = propostaChat.data as any[];
@@ -29,10 +49,13 @@ const ChatWeb: React.FC = () => {
         if (data) {
           const contactsData = await Promise.all(
             data.map(async (conversation) => {
-              const findProfile = await getProfileById(conversation.profile2_id);
+              const findProfile = await getProfileById(
+                conversation.profile2_id
+              );
               const profile = findProfile.data as any[];
               return {
                 name: profile[0].full_name,
+                id: profile[0].id,
                 avatar: profile[0].full_name[0].toUpperCase(),
                 verified: profile[0].verification,
               };
@@ -43,8 +66,88 @@ const ChatWeb: React.FC = () => {
       }
     }
 
-    fetchMessages();
+    fetchConversations();
   }, [client?.id]);
+
+  const teste = (contact: contactTypes, index: number) => {
+    setIsChatboxOpen(true);
+    setSelectedContactId(contact.id);
+    setSelectedContactIndex(index);
+
+    async function fetchMessages() {
+      const conversation = await getConversationsExists(
+        client?.id as string,
+        contact.id
+      );
+      console.log(conversation);
+      if (conversation.data?.length) {
+        const idConversation = conversation.data[0].id;
+        const fetchedMessages = await getAllMessages(idConversation);
+        if (fetchedMessages.data) {
+          const formattedMessages = fetchedMessages.data.map((item: any) => ({
+            text: item.content,
+            sender: item.sender_id,
+          }));
+          setMessages(formattedMessages);
+        }
+      }
+    }
+    fetchMessages();
+  };
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("messages-component")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "messages",
+        },
+        (payload: any) => {
+          const newMessage = {
+            text: payload.new.content,
+            sender: payload.new.sender_id,
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("conversations-component")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+        },
+        (payload: any) => {
+          if (
+            payload.eventType === "INSERT" ||
+            payload.eventType === "UPDATE"
+          ) {
+            // fetchMessages();
+            console.log(payload);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -58,6 +161,30 @@ const ChatWeb: React.FC = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const handleSendMessage = useCallback(() => {
+    if (userMessage.trim() !== "") {
+      addUserMessage(userMessage);
+      setUserMessage("");
+    }
+  }, [userMessage]);
+
+  const addUserMessage = async (message: string) => {
+    if (client?.id) {
+      const conversation = await getConversationsExists(
+        client?.id as string,
+        selectedContactId as string
+      );
+      if (conversation.data?.length) {
+        const idConversation = conversation.data[0].id;
+        await sendMessage({
+          content: message,
+          conversation_id: idConversation,
+          sender_id: client.id ?? "0",
+        });
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto">
@@ -95,11 +222,15 @@ const ChatWeb: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => {
-                    setIsChatboxOpen(true);
-                    setSelectedContactIndex(index);
+                    // setIsChatboxOpen(true);
+                    // setSelectedContactId(contact.id);
+                    // setSelectedContactIndex(index);
+                    teste(contact, index);
                   }}
                   className={`flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
-                    selectedContactIndex === index ? "bg-gray-300" : "hover:bg-gray-100"
+                    selectedContactIndex === index
+                      ? "bg-gray-300"
+                      : "hover:bg-gray-100"
                   } focus:outline-none`}
                 >
                   <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
@@ -110,7 +241,7 @@ const ChatWeb: React.FC = () => {
                       {contact.verified ? (
                         <span className="ml-2 font-semibold text-gray-600 flex items-center gap-1">
                           {contact.name}
-                          <MdOutlineVerified size={"20px"} color="#4db7ff"/>
+                          <MdOutlineVerified size={"20px"} color="#4db7ff" />
                         </span>
                       ) : (
                         <span className="block ml-2 font-semibold text-gray-600">
@@ -129,7 +260,7 @@ const ChatWeb: React.FC = () => {
 
         {isChatboxOpen ? (
           <div className="hidden lg:col-span-2 lg:block">
-            <div className="w-full">
+            <div>
               <div className="relative flex items-center p-3 border-b border-gray-300">
                 <img
                   className="object-cover w-10 h-10 rounded-full"
@@ -139,53 +270,50 @@ const ChatWeb: React.FC = () => {
                 <span className="block ml-2 font-bold text-gray-600">Emma</span>
                 <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
               </div>
-              <div className="relative w-full p-6 overflow-y-auto h-[40rem]">
-                <ul className="space-y-2">
-                  <li className="flex justify-start">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
-                      <span className="block">Hi</span>
-                    </div>
-                  </li>
-                  <li className="flex justify-end">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
-                      <span className="block">Hiiii</span>
-                    </div>
-                  </li>
-                  <li className="flex justify-end">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
-                      <span className="block">how are you?</span>
-                    </div>
-                  </li>
-                  <li className="flex justify-start">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
-                      <span className="block">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing
-                        elit.
-                      </span>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
-                <input
-                  type="text"
-                  placeholder="Message"
-                  className="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
-                  name="message"
-                  required
-                />
-                <button type="submit">
-                  <svg
-                    className="w-5 h-5 text-gray-500 origin-center transform rotate-90"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+            </div>
+            <div
+              id="chatbox"
+              className="p-4 h-80 overflow-y-auto"
+              ref={chatboxRef}
+            >
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`mb-2 ${
+                    message.sender === client?.id ? "text-right" : ""
+                  }`}
+                >
+                  <p
+                    className={`${
+                      message.sender === client?.id
+                        ? "bg-[#073321] text-white"
+                        : "bg-gray-200 text-gray-700"
+                    } rounded-lg py-2 px-4 inline-block`}
                   >
-                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                  </svg>
-                </button>
-              </div>
+                    {message.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t flex">
+              <input
+                id="user-input"
+                type="text"
+                placeholder="Type a message"
+                autoComplete="off"
+                className="w-full px-3 py-2 border rounded-l-md outline-none bg-[#0e0d0d] text-white"
+                value={userMessage}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setUserMessage(e.target.value)
+                }
+              />
+              <button
+                id="send-button"
+                className="bg-[#06613b] text-white px-4 py-2 rounded-r-md hover:bg-[#07271a] transition duration-300"
+                onClick={handleSendMessage}
+              >
+                Enviar
+              </button>
             </div>
           </div>
         ) : (
