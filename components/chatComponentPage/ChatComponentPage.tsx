@@ -5,7 +5,6 @@ import { MdOutlineVerified } from "react-icons/md";
 
 type contactTypes = {
   name: string;
-  message: string;
   avatar: string;
 };
 
@@ -30,7 +29,6 @@ const ChatWeb: React.FC = () => {
           const nam = name[0].full_name;
           const body = {
             name: nam,
-            message: "i.last_message",
             avatar: nam[0].toUpperCase(),
           };
 
@@ -41,27 +39,6 @@ const ChatWeb: React.FC = () => {
     }
     fetchMessages();
   });
-
-  // const contacts = [
-  //   {
-  //     name: "Jhon Don",
-  //     message: "bye",
-  //     avatar:
-  //       "https://cdn.pixabay.com/photo/2018/09/12/12/14/man-3672010__340.jpg",
-  //   },
-  //   {
-  //     name: "Same",
-  //     message: "Good night",
-  //     avatar:
-  //       "https://cdn.pixabay.com/photo/2016/06/15/15/25/loudspeaker-1459128__340.png",
-  //   },
-  //   {
-  //     name: "Emma",
-  //     message: "Good Morning",
-  //     avatar:
-  //       "https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg",
-  //   },
-  // ];
 
   return (
     <div className="container mx-auto">
@@ -102,11 +79,6 @@ const ChatWeb: React.FC = () => {
                     index === 1 ? "bg-gray-100" : "hover:bg-gray-100"
                   } focus:outline-none`}
                 >
-                  {/* <img
-                    className="object-cover w-10 h-10 rounded-full"
-                    src={contact.avatar}
-                    alt="username"
-                  /> */}
                   <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
                     {contact.avatar}
                   </div>
@@ -122,14 +94,7 @@ const ChatWeb: React.FC = () => {
                           {contact.name}
                         </span>
                       )}
-
-                      {/* <span className="block ml-2 text-sm text-gray-600">
-                      {contact.time}
-                    </span> */}
                     </div>
-                    {/* <span className="block ml-2 text-sm text-gray-600">
-                      {contact.message}
-                    </span> */}
                   </div>
                 </a>
               ))
