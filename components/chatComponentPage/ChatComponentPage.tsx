@@ -26,9 +26,7 @@ const ChatWeb: React.FC = () => {
           let contactEdited = [];
           const findProfile = await getProfileById(i.profile2_id);
           const name = findProfile.data as any[];
-          const teste = true
-          setVerified(teste);
-          //name[0].verification
+          setVerified(name[0].verification);
           const nam = name[0].full_name;
           const body = {
             name: nam,
