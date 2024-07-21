@@ -62,6 +62,12 @@ export default function DropdownMenu({
           >
             Logout
           </button>
+          <Link
+            href="/chat"
+            className="block text-left py-2 px-4 hover:bg-gray-400 rounded"
+          >
+            Conversas
+          </Link>
         </div>
       )}
     </div>

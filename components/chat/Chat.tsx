@@ -36,7 +36,6 @@ const Chat: React.FC<Props> = ({ user_id }) => {
         client?.id as string,
         user_id
       );
-      console.log(conversation)
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
         const fetchedMessages = await getAllMessages(idConversation);

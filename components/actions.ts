@@ -316,9 +316,19 @@ export async function getBackGroundPhoto(): Promise<string | null> {
   }
 }
 
+export async function getProfileById(id: string){
+  const supabase = createClient();
+  return supabase.from("profiles").select('*').eq("id", id)
+}
+
 export async function getConversationsExists(sender: string, recipient: string){
   const supabase = createClient();
   return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient)
+}
+
+export async function getConversationsSendedAll(sender: String){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").eq("profile1_id", sender)
 }
 
 export async function createConversation(conversationData: Conversations){
