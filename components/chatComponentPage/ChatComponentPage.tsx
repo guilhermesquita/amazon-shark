@@ -3,6 +3,7 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   getAllMessages,
   getConversationsExists,
+  getConversationsReceivedAll,
   getConversationsSendedAll,
   getProfileById,
   sendMessage,
@@ -29,6 +30,8 @@ const ChatWeb: React.FC = () => {
   const [contacts, setContacts] = useState<contactTypes[] | null>(null);
   const [userMessage, setUserMessage] = useState<string>("");
 
+  const [proposalContacts, setProposalContacts] = useState<contactTypes[] | null>(null);
+
   const [selectedContactIndex, setSelectedContactIndex] = useState<
     number | null
   >(null);
@@ -39,6 +42,12 @@ const ChatWeb: React.FC = () => {
   );
 
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
+
+  useEffect(() => {
+    if (chatboxRef.current) {
+      chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     async function fetchConversations() {
@@ -69,6 +78,34 @@ const ChatWeb: React.FC = () => {
     fetchConversations();
   }, [client?.id]);
 
+  useEffect(() => {
+    async function fetchConversationsProposal() {
+      if (client?.id) {
+        const propostaChat = await getConversationsReceivedAll(client.id);
+        const data = propostaChat.data as any[];
+        if (data) {
+          const contactsData = await Promise.all(
+            data.map(async (conversation) => {
+              const findProfile = await getProfileById(
+                conversation.profile1_id
+              );
+              const profile = findProfile.data as any[];
+              return {
+                name: profile[0].full_name,
+                id: profile[0].id,
+                avatar: profile[0].full_name[0].toUpperCase(),
+                verified: profile[0].verification,
+              };
+            })
+          );
+          setProposalContacts(contactsData);
+        }
+      }
+    }
+
+    fetchConversationsProposal();
+  }, [client?.id]);
+
   const teste = (contact: contactTypes, index: number) => {
     setIsChatboxOpen(true);
     setSelectedContactId(contact.id);
@@ -79,8 +116,39 @@ const ChatWeb: React.FC = () => {
         client?.id as string,
         contact.id
       );
-      console.log(conversation);
       if (conversation.data?.length) {
+        const idConversation = conversation.data[0].id;
+        const fetchedMessages = await getAllMessages(idConversation);
+        if (fetchedMessages.data) {
+          const formattedMessages = fetchedMessages.data.map((item: any) => ({
+            text: item.content,
+            sender: item.sender_id,
+          }));
+          setMessages(formattedMessages);
+        }
+      }
+    }
+    fetchMessages();
+  };
+
+  const teste2 = (contact: contactTypes, index: number) => {
+    setIsChatboxOpen(true);
+    setSelectedContactId(contact.id);
+    setSelectedContactIndex(index);
+
+    async function fetchMessages() {
+      const conversation = await getConversationsExists(
+        contact.id,
+        client?.id as string
+      );
+      if (conversation.data?.length) {
+
+        setTimeout(() => {
+          if (chatboxRef.current) {
+            chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+          }
+        }, 0);
+
         const idConversation = conversation.data[0].id;
         const fetchedMessages = await getAllMessages(idConversation);
         if (fetchedMessages.data) {
@@ -137,7 +205,6 @@ const ChatWeb: React.FC = () => {
             payload.eventType === "INSERT" ||
             payload.eventType === "UPDATE"
           ) {
-            // fetchMessages();
             console.log(payload);
           }
         }
@@ -169,12 +236,39 @@ const ChatWeb: React.FC = () => {
     }
   }, [userMessage]);
 
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleSendMessage();
+      }
+    };
+    window.addEventListener("keyup", handleKeyPress);
+    return () => {
+      window.removeEventListener("keyup", handleKeyPress);
+    };
+  }, [handleSendMessage]);
+
   const addUserMessage = async (message: string) => {
     if (client?.id) {
       const conversation = await getConversationsExists(
         client?.id as string,
         selectedContactId as string
       );
+
+      const conversationProposal = await getConversationsExists(
+        selectedContactId as string,
+        client?.id as string
+      );
+
+      if(conversationProposal.data?.length){
+        const idConversation = conversationProposal.data[0].id;
+        await sendMessage({
+          content: message,
+          conversation_id: idConversation,
+          sender_id: client.id ?? "0",
+        });
+      }
+
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
         await sendMessage({
@@ -215,8 +309,10 @@ const ChatWeb: React.FC = () => {
             </div>
           </div>
 
+          <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Chats</h2>
+
           <ul className="overflow-auto h-[32rem]">
-            <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Chats</h2>
+            <h3>Propostas Enviadas</h3>
             {contacts ? (
               contacts.map((contact, index) => (
                 <button
@@ -226,6 +322,45 @@ const ChatWeb: React.FC = () => {
                     // setSelectedContactId(contact.id);
                     // setSelectedContactIndex(index);
                     teste(contact, index);
+                  }}
+                  className={`flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
+                    selectedContactIndex === index
+                      ? "bg-gray-300"
+                      : "hover:bg-gray-100"
+                  } focus:outline-none`}
+                >
+                  <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                    {contact.avatar}
+                  </div>
+                  <div className="w-full pb-2">
+                    <div className="flex justify-between">
+                      {contact.verified ? (
+                        <span className="ml-2 font-semibold text-gray-600 flex items-center gap-1">
+                          {contact.name}
+                          <MdOutlineVerified size={"20px"} color="#4db7ff" />
+                        </span>
+                      ) : (
+                        <span className="block ml-2 font-semibold text-gray-600">
+                          {contact.name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div>nada achado</div>
+            )}
+            <h3>Propostas recebidas</h3>
+            {proposalContacts ? (
+              proposalContacts.map((contact, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    // setIsChatboxOpen(true);
+                    // setSelectedContactId(contact.id);
+                    // setSelectedContactIndex(index);
+                    teste2(contact, index);
                   }}
                   className={`flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
                     selectedContactIndex === index
