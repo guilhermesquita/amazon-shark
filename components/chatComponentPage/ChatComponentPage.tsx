@@ -41,6 +41,8 @@ const ChatWeb: React.FC = () => {
     null
   );
 
+  const [nameSelected, setNameSelected] = useState<string>("");
+
   const [isChatboxOpen, setIsChatboxOpen] = useState(false);
 
   useEffect(() => {
@@ -110,6 +112,7 @@ const ChatWeb: React.FC = () => {
     setIsChatboxOpen(true);
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
+    setNameSelected(contact.name);
 
     async function fetchMessages() {
       const conversation = await getConversationsExists(
@@ -135,6 +138,7 @@ const ChatWeb: React.FC = () => {
     setIsChatboxOpen(true);
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
+    setNameSelected(contact.name)
 
     async function fetchMessages() {
       const conversation = await getConversationsExists(
@@ -397,13 +401,11 @@ const ChatWeb: React.FC = () => {
           <div className="hidden lg:col-span-2 lg:block">
             <div>
               <div className="relative flex items-center p-3 border-b border-gray-300">
-                <img
-                  className="object-cover w-10 h-10 rounded-full"
-                  src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
-                  alt="username"
-                />
-                <span className="block ml-2 font-bold text-gray-600">Emma</span>
-                <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
+              <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                    {nameSelected[0].toUpperCase()}
+                  </div>
+                <span className="block ml-2 font-bold text-gray-600">{nameSelected}</span>
+                {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span> */}
               </div>
             </div>
             <div
