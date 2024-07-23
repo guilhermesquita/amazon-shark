@@ -1,7 +1,9 @@
+'use client'
 import React from "react";
 import AuthButton from "./AuthButton";
 import DeployButton from "./DeployButton";
 import MenuButton from "./MenuButton";
+import HamburgerMenu from "./hambuger";
 
 
 export default function Navbar() {
@@ -12,6 +14,7 @@ export default function Navbar() {
         <DeployButton />
         <MenuButton />
         <AuthButton />
+        <HamburgerMenu/>
       </div>
     </nav>
   );

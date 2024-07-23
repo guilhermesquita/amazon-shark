@@ -33,6 +33,7 @@ export default function Index() {
             backgroundImage: `url(${backgroundUrl})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            zIndex: -1
           }}
         >
           <HomeContent />

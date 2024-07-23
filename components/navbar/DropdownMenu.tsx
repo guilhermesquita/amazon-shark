@@ -49,12 +49,18 @@ export default function DropdownMenu({
         </div>
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 border rounded-md shadow-lg">
+        <div className="absolute animate-slide-down bg-white right-0 mt-2 w-48 border rounded-md shadow-lg fadeInDown">
           <Link
             href="/dashboard"
             className="block text-left py-2 px-4 hover:bg-gray-400 rounded"
           >
             Dashboard
+          </Link>
+          <Link
+            href="/chat"
+            className="block text-left py-2 px-4 hover:bg-gray-400 rounded"
+          >
+            Conversas
           </Link>
           <button
             className="w-full text-left py-2 px-4 hover:bg-gray-400 rounded"
@@ -62,12 +68,6 @@ export default function DropdownMenu({
           >
             Logout
           </button>
-          <Link
-            href="/chat"
-            className="block text-left py-2 px-4 hover:bg-gray-400 rounded"
-          >
-            Conversas
-          </Link>
         </div>
       )}
     </div>
