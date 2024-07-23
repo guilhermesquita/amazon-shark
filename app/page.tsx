@@ -39,7 +39,7 @@ export default function Index() {
         >
           <HomeContent />
         </div>
-        <a href="/sobre-nos" className="bg-[#22B573] hover:bg-[#198b58] duration-300 text-white py-4 px-10 rounded-md shadow-2xl mb-10">
+        <a href="/sobre-nos" className="bg-[#22B573] hover:bg-[#198b58] duration-300 text-white py-4 px-10 rounded-md drop-shadow-lg mb-10">
           Navegue
         </a>
       </main>
