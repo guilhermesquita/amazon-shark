@@ -11,7 +11,7 @@ export default function MenuButton() {
     <nav className="flex space-x-28">
       {pages.map((page) => (
         <Link key={page.name} href={page.href} passHref>
-          <div className="py-2 px-3 flex rounded-md no-underline hover:bg-btn-background-hover cursor-pointer">
+          <div className="py-2 px-4 flex rounded-md hover:bg-btn-background-hover cursor-pointer">
             {page.name}
           </div>
         </Link>

@@ -23,10 +23,10 @@ export default function DeployButton() {
 
   return (
     <Link
-      className="py-2 px-3 flex rounded-md hover:opacity-75 duration-300"
+      className="py-2  flex rounded-md hover:opacity-75 duration-300"
       href="/"
     >
-      <img src={backgroundUrl as string} alt="" height="50px" width="50px" />
+      <img src={backgroundUrl as string} alt="" width="50px" />
     </Link>
   );
 }

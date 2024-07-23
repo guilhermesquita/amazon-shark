@@ -8,7 +8,7 @@ export default function Navbar() {
 
   return (
     <nav className="w-full flex justify-center h-16 bg-transparent">
-      <div className="w-full flex justify-center gap-80 items-center p-10 text-sm">
+      <div className="w-full flex justify-around items-center p-10 text-sm">
         <DeployButton />
         <MenuButton />
         <AuthButton />
