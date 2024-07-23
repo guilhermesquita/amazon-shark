@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Companies } from "../types/companies";
 import { getPhotoByCompanie } from "../actions"; 
+import Chat from "../chat/Chat";
 
 type Props = {
   company: Companies;
@@ -32,13 +33,15 @@ const CompanyDetails: React.FC<Props> = ({ company, onClose }) => {
             className="w-full md:w-1/3 h-48 object-cover rounded-lg mb-4 md:mb-0 md:mr-6"
           />
           <div className="flex-1">
-            <h2 className="text-3xl font-bold mb-2">{company.name}</h2>
+            <h2 className="text-3xl font-bold mb-2" onClick={() => alert(company.user_id)}>{company.name}</h2>
             <p className="text-white-700 mb-4">{company.description}</p>
             <div className="flex flex-col md:flex-row">
               <p className="text-white-900 font-semibold mb-2 md:mb-0 md:mr-4">CNPJ: {company.cnpj}</p>
               <p className="text-white-900 font-semibold mb-2 md:mb-0 md:mr-4">Setor: {company.sector}</p>
               <p className="text-white-900 font-semibold">Endereço: {company.endereco}</p>
             </div>
+
+            <Chat user_id={company.user_id}/>
           </div>
         </div>
         <div className="mt-6">

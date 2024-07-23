@@ -1,5 +1,16 @@
-import React, { useState, useEffect, ChangeEvent, useRef, useCallback } from "react";
-import { getAllMessages, sendMessage } from "../actions";
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  useRef,
+  useCallback,
+} from "react";
+import {
+  createConversation,
+  getAllMessages,
+  getConversationsExists,
+  sendMessage,
+} from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { createClient } from "@/utils/supabase/client";
 
@@ -8,7 +19,11 @@ interface Message {
   sender: string;
 }
 
-const Chat: React.FC = () => {
+type Props = {
+  user_id: string;
+};
+
+const Chat: React.FC<Props> = ({ user_id }) => {
   const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,13 +32,20 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     async function fetchMessages() {
-      const fetchedMessages = await getAllMessages(1);
-      if (fetchedMessages.data) {
-        const formattedMessages = fetchedMessages.data.map((item: any) => ({
-          text: item.content,
-          sender: item.sender_id,
-        }));
-        setMessages(formattedMessages);
+      const conversation = await getConversationsExists(
+        client?.id as string,
+        user_id
+      );
+      if (conversation.data?.length) {
+        const idConversation = conversation.data[0].id;
+        const fetchedMessages = await getAllMessages(idConversation);
+        if (fetchedMessages.data) {
+          const formattedMessages = fetchedMessages.data.map((item: any) => ({
+            text: item.content,
+            sender: item.sender_id,
+          }));
+          setMessages(formattedMessages);
+        }
       }
     }
     fetchMessages();
@@ -32,13 +54,13 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
-      .channel('messages-component')
+      .channel("messages-component")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'messages',
+          event: "*",
+          schema: "public",
+          table: "messages",
         },
         (payload: any) => {
           const newMessage = {
@@ -56,18 +78,58 @@ const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("conversations-component")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+        },
+        (payload: any) => {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            // fetchMessages();
+            console.log(payload)
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
     if (chatboxRef.current) {
       chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
     }
   }, [messages]);
 
-  const toggleChatbox = () => {
-    setIsChatboxOpen(!isChatboxOpen);
-    setTimeout(() => {
-      if (chatboxRef.current) {
-        chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
-      }
-    }, 0);
+  const toggleChatbox = async () => {
+    const clientId = client?.id as string;
+    const conversationExists = await ensureConversationExists(clientId, user_id);
+    if (conversationExists) {
+      setIsChatboxOpen(!isChatboxOpen);
+      setTimeout(() => {
+        if (chatboxRef.current) {
+          chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
+        }
+      }, 0);
+    } else {
+      alert('Já existe uma conversa ativa.');
+    }
+  };
+
+  const ensureConversationExists = async (clientId: string, userId: string): Promise<boolean> => {
+    const conversation = await getConversationsExists(clientId, userId);
+    if (!conversation.data?.length) {
+      await createConversation({ profile1_id: clientId, profile2_id: userId });
+      return true;
+    }
+    return false;
   };
 
   const handleSendMessage = useCallback(() => {
@@ -79,13 +141,18 @@ const Chat: React.FC = () => {
 
   const addUserMessage = async (message: string) => {
     if (client?.id) {
-      // const newMessage = { text: message, sender: client.id };
-      // setMessages((prevMessages) => [...prevMessages, newMessage]);
-      await sendMessage({
-        content: message,
-        conversation_id: 1,
-        sender_id: client.id ?? '0',
-      });
+      const conversation = await getConversationsExists(
+        client?.id as string,
+        user_id
+      );
+      if (conversation.data?.length) {
+        const idConversation = conversation.data[0].id;
+        await sendMessage({
+          content: message,
+          conversation_id: idConversation,
+          sender_id: client.id ?? "0",
+        });
+      }
     }
   };
 
@@ -100,10 +167,9 @@ const Chat: React.FC = () => {
       window.removeEventListener("keyup", handleKeyPress);
     };
   }, [handleSendMessage]);
-
   return (
     <div>
-      <div className="fixed bottom-0 right-0 mb-4 mr-4">
+      <div className="mt-5">
         <button
           id="open-chat"
           className="bg-[#073321] text-white py-2 px-4 rounded-md hover:bg-[#07271a] transition duration-300 flex items-center"
@@ -123,12 +189,12 @@ const Chat: React.FC = () => {
               d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             ></path>
           </svg>
-          Chat
+          Faça uma Proposta!
         </button>
       </div>
       <div
         id="chat-container"
-        className={`fixed bottom-16 right-4 w-96 ${
+        className={`fixed bottom-0 right-0 w-96 ${
           isChatboxOpen ? "" : "hidden"
         }`}
       >
@@ -156,7 +222,11 @@ const Chat: React.FC = () => {
               </svg>
             </button>
           </div>
-          <div id="chatbox" className="p-4 h-80 overflow-y-auto" ref={chatboxRef}>
+          <div
+            id="chatbox"
+            className="p-4 h-80 overflow-y-auto"
+            ref={chatboxRef}
+          >
             {messages.map((message, index) => (
               <div
                 key={index}
