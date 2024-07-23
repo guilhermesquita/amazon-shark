@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer
       style={{
-        backgroundImage: `url(https://xkryxpqojxjdvsedntht.supabase.co/storage/v1/object/public/amazonshark/Rectangle-background.png)`,
+        backgroundImage: `url(https://xkryxpqojxjdvsedntht.supabase.co/storage/v1/object/public/amazonshark/Rectangle-background.svg?t=2024-07-23T21%3A02%3A15.716Z)`,
         backgroundSize: "auto",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "left",
