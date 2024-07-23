@@ -13,7 +13,9 @@ const HamburgerMenu: React.FC = () => {
   };
 
   return (
-    <div className="relative lg:hidden">
+    <div className="relative lg:hidden" style={{
+      zIndex: 1
+    }}>
       <button
         className="flex flex-col items-center justify-center w-12 h-12 space-y-1.5 bg-gray-800 rounded-md focus:outline-none"
         onClick={toggleMenu}
