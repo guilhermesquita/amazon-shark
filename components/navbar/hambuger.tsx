@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { pages } from './MenuButton';
+import Link from 'next/link';
 
 const HamburgerMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,9 +10,9 @@ const HamburgerMenu: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative lg:hidden">
       <button
-        className="flex flex-col items-center justify-center w-10 h-10 space-y-1.5 bg-gray-800 rounded-md focus:outline-none"
+        className="flex flex-col items-center justify-center w-12 h-12 space-y-1.5 bg-gray-800 rounded-md focus:outline-none"
         onClick={toggleMenu}
       >
         <span className={`block w-6 h-0.5 bg-white transition-transform duration-300 ${isOpen ? 'transform rotate-45 translate-y-2' : ''}`} />
@@ -19,10 +21,12 @@ const HamburgerMenu: React.FC = () => {
       </button>
       <div className={`absolute top-12 right-0 w-40 bg-white border rounded-lg shadow-lg transition-transform duration-300 ${isOpen ? 'transform scale-100' : 'transform scale-0'}`}>
         <ul className="flex flex-col p-2 space-y-2">
-          <li><a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Home</a></li>
-          <li><a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">About</a></li>
-          <li><a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Services</a></li>
-          <li><a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Contact</a></li>
+            {pages.map((page) => {
+                return (
+                    <li><Link href={page.href} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">{page.name}</Link></li>
+                );
+            })}
+                <li><Link href='/verified' className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Obter verificação</Link></li>
         </ul>
       </div>
     </div>
