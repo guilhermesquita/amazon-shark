@@ -5,6 +5,7 @@ import Footer from "@/components/footer/Footer";
 import HomeContent from "@/components/HomeContent";
 import { getBackGroundPhoto } from "../components/actions";
 import Spinner from "@/components/Spinner/Spinner";
+import { ClientContextType, useClient } from "./context/clientContext";
 
 export default function Index() {
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function Index() {
         >
           <HomeContent />
         </div>
-        <a href="/sobre-nos" className="bg-[#22B573] hover:bg-[#198b58] duration-300 text-white py-4 px-10 rounded-md shadow-md mb-10">
+        <a href="/sobre-nos" className="bg-[#22B573] hover:bg-[#198b58] duration-300 text-white py-4 px-10 rounded-md shadow-2xl mb-10">
           Navegue
         </a>
       </main>

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { pages } from './MenuButton';
 import Link from 'next/link';
+import { ClientContextType, useClient } from '@/app/context/clientContext';
 
 const HamburgerMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const {client} = useClient() as ClientContextType
+
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -26,7 +29,8 @@ const HamburgerMenu: React.FC = () => {
                     <li><Link href={page.href} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">{page.name}</Link></li>
                 );
             })}
-                <li><Link href='/verified' className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Obter verificação</Link></li>
+                
+            {!client?.verification ? <li><Link href='/verified' className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Obter verificação</Link></li> : null}
         </ul>
       </div>
     </div>
