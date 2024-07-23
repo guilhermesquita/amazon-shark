@@ -8,7 +8,7 @@ const pages = [
 
 export default function MenuButton() {
   return (
-    <nav className="flex space-x-4">
+    <nav className="flex space-x-28">
       {pages.map((page) => (
         <Link key={page.name} href={page.href} passHref>
           <div className="py-2 px-3 flex rounded-md no-underline hover:bg-btn-background-hover cursor-pointer">

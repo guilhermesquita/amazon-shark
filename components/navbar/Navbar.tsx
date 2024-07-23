@@ -7,8 +7,8 @@ import MenuButton from "./MenuButton";
 export default function Navbar() {
 
   return (
-    <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-      <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
+    <nav className="w-full flex justify-center h-16 bg-transparent">
+      <div className="w-full flex justify-center gap-80 items-center p-10 text-sm">
         <DeployButton />
         <MenuButton />
         <AuthButton />
