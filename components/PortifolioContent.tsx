@@ -5,6 +5,7 @@ import Spinner from "./Spinner/Spinner";
 import { Companies } from "./types/companies";
 import CompanyCard from "./EmpresaCard/EmpresaCard";
 import CompanyDetails from "../components/EmpresaDetails/EmpresaDetails"; 
+import { ClientContextType, useClient } from "@/app/context/clientContext";
 
 export default function UserContent() {
   const [userFullName, setUserFullName] = useState<string | null>(null);
@@ -13,6 +14,8 @@ export default function UserContent() {
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
   const [selectedCompany, setSelectedCompany] = useState<Companies | null>(null);
+
+  const {setCompany} = useClient() as ClientContextType
 
   useEffect(() => {
     async function fetchUserData() {
@@ -48,6 +51,7 @@ export default function UserContent() {
 
   const handleViewDetails = async (company: Companies) => {
     setSelectedCompany(company);
+    setCompany(company);
     const imageUrl = await getPhotoByCompanie(company);
   };
   
@@ -69,14 +73,14 @@ export default function UserContent() {
           <button 
             key={sector} 
             onClick={() => setSelectedSector(sector)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded ${selectedSector === sector ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
+            className={`flex items-center gap-2 px-4 py-2 border rounded ${selectedSector === sector ? 'bg-[#22B573] text-white' : 'bg-white text-black'}`}
           >
             {sector}
           </button>
         ))}
         <button 
           onClick={() => setSelectedSector(null)}
-          className={`flex items-center gap-2 px-4 py-2 border rounded ${selectedSector === null ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
+          className={`flex items-center gap-2 px-4 py-2 border rounded ${selectedSector === null ? 'bg-[#22B573] text-white' : 'bg-white text-black'}`}
         >
           Todos
         </button>
@@ -95,7 +99,6 @@ export default function UserContent() {
 
       {selectedCompany && (
         <CompanyDetails
-          company={selectedCompany}
           onClose={() => setSelectedCompany(null)}
         />
       )}

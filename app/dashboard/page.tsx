@@ -7,6 +7,8 @@ import Profile from "@/components/usuario/Profile";
 import React, { useEffect, useState } from "react";
 import { getUser } from "@/components/actions";
 import Spinner from "@/components/Spinner/Spinner";
+import { useRouter } from "next/navigation";
+import { ClientContextType, useClient } from "../context/clientContext";
 
 type UserMetadata = {
   email: string;
@@ -17,6 +19,15 @@ export default function Dashboard() {
   const [selectedSection, setSelectedSection] = useState("profile");
   const [user, setUser] = useState<UserMetadata | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+  const { client } = useClient() as ClientContextType;
+
+  useEffect(() => {
+    if (!client?.id) {
+      router.push("/login");
+    }
+  });
 
   useEffect(() => {
     async function fetchUser() {

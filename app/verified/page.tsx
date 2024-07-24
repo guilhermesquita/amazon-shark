@@ -6,11 +6,22 @@ import QrCodeField from "@/components/qrcodeField/qrCodeField";
 import { UserIdentity } from "@supabase/supabase-js";
 import { requestBodyPost } from "@/service/pixApi";
 import { MdOutlineVerified } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { ClientContextType, useClient } from "../context/clientContext";
 
 export default function Index() {
   const { user } = useUser() as UserContextType;
 
   const [confirm, setConfirm] = useState(false);
+
+  const router = useRouter();
+  const { client } = useClient() as ClientContextType;
+
+  useEffect(() => {
+    if (!client?.id) {
+      router.push("/login");
+    }
+  });
 
   const callbackQrCode = () => {
     if (!user) {
@@ -34,8 +45,6 @@ export default function Index() {
         number: document.cpf,
       },
     };
-
-    console.log(body);
 
     if (confirm) {
       if (user) {
