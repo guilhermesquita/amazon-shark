@@ -16,17 +16,9 @@ export default function CompanyCard({ company, imageUrl, onViewDetails }: Compan
         <p className="mb-4">{company.description}</p>
         <p className="font-semibold mb-2">Objetivo:</p>
         <p className="mb-4">{company.objetivo}</p>
-        <a
-          href={company.social_links}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline mb-4 block"
-        >
-          Social Links
-        </a>
         <button
           onClick={onViewDetails}
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+          className="mt-4 bg-[#22B573] text-white px-4 py-2 rounded-lg hover:bg-[#1a945d] transition-colors duration-300"
         >
           Ver detalhes
         </button>

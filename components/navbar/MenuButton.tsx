@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const pages = [
+export const pages = [
   { name: 'Sobre Nós', href: '/sobre-nos' },
   { name: 'Como Funciona', href: '/como-funciona' },
   { name: 'Portifólio', href: '/portifolio' }
@@ -8,10 +8,10 @@ const pages = [
 
 export default function MenuButton() {
   return (
-    <nav className="flex space-x-4">
+    <nav className="lg:flex space-x-28 hidden">
       {pages.map((page) => (
         <Link key={page.name} href={page.href} passHref>
-          <div className="py-2 px-3 flex rounded-md no-underline hover:bg-btn-background-hover cursor-pointer">
+          <div className="py-2 px-4 flex rounded-md hover:bg-btn-background-hover cursor-pointer">
             {page.name}
           </div>
         </Link>

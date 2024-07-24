@@ -11,6 +11,8 @@ import {
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { MdOutlineVerified } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
+import Spinner from "../Spinner/Spinner";
+import { IoIosChatbubbles } from "react-icons/io";
 
 type contactTypes = {
   id: string;
@@ -285,7 +287,7 @@ const ChatWeb: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto bg-white">
       <div className="min-w-full border rounded lg:grid lg:grid-cols-3">
         <div className="border-r border-gray-300 lg:col-span-1">
           <div className="mx-3 my-3">
@@ -313,21 +315,20 @@ const ChatWeb: React.FC = () => {
             </div>
           </div>
 
-          <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Chats</h2>
+          <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Conversas</h2>
 
-          <ul className="overflow-auto h-[32rem]">
-            <h3>Propostas Enviadas</h3>
+          <ul className="min-h-3/5">
+            <h3 className="ml-2 mt-2 font-bold">Propostas Enviadas</h3>
             {contacts ? (
               contacts.map((contact, index) => (
                 <button
                   key={index}
                   onClick={() => {
-                    // setIsChatboxOpen(true);
-                    // setSelectedContactId(contact.id);
-                    // setSelectedContactIndex(index);
                     teste(contact, index);
                   }}
-                  className={`flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
+                  className={`flex 
+                    overflow-y-auto
+                    items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
                     selectedContactIndex === index
                       ? "bg-gray-300"
                       : "hover:bg-gray-100"
@@ -353,9 +354,9 @@ const ChatWeb: React.FC = () => {
                 </button>
               ))
             ) : (
-              <div>nada achado</div>
+              <div><Spinner/></div>
             )}
-            <h3>Propostas recebidas</h3>
+            <h3 className="ml-2 mt-5 font-bold">Propostas recebidas</h3>
             {proposalContacts ? (
               proposalContacts.map((contact, index) => (
                 <button
@@ -366,7 +367,7 @@ const ChatWeb: React.FC = () => {
                     // setSelectedContactIndex(index);
                     teste2(contact, index);
                   }}
-                  className={`flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
+                  className={`overflow-y-auto flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
                     selectedContactIndex === index
                       ? "bg-gray-300"
                       : "hover:bg-gray-100"
@@ -392,7 +393,7 @@ const ChatWeb: React.FC = () => {
                 </button>
               ))
             ) : (
-              <div>nada achado</div>
+              <div><Spinner/></div>
             )}
           </ul>
         </div>
@@ -405,12 +406,11 @@ const ChatWeb: React.FC = () => {
                     {nameSelected[0].toUpperCase()}
                   </div>
                 <span className="block ml-2 font-bold text-gray-600">{nameSelected}</span>
-                {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span> */}
               </div>
             </div>
             <div
               id="chatbox"
-              className="p-4 h-80 overflow-y-auto"
+              className="p-4 max-h-80 overflow-y-auto"
               ref={chatboxRef}
             >
               {messages.map((message, index) => (
@@ -454,7 +454,10 @@ const ChatWeb: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div>Nada aqui!!</div>
+          <div className=" w-full h-full flex justify-center items-center">
+            <IoIosChatbubbles size={'60px'}/>
+            Inicie uma conversa
+          </div>
         )}
       </div>
     </div>

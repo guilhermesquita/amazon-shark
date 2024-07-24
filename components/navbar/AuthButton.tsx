@@ -43,9 +43,9 @@ export default function AuthButton() {
         return (
           <Link
             href="/verified"
-            className="flex items-center gap-2 
+            className="lg:flex items-center gap-2 hidden
           py-2 px-3 rounded-md no-underline duration-300
-          bg-[#0c6350] hover:bg-[#0a4b3d]"
+          bg-[#0c6350] hover:bg-[#0a4b3d] text-white"
           >
             <MdOutlineVerified size={"30px"} />
             Obter Verificação

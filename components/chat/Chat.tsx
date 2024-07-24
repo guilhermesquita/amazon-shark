@@ -13,6 +13,7 @@ import {
 } from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface Message {
   text: string;
@@ -29,6 +30,8 @@ const Chat: React.FC<Props> = ({ user_id }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { client } = useClient() as ClientContextType;
   const chatboxRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter()
 
   useEffect(() => {
     async function fetchMessages() {
@@ -110,6 +113,7 @@ const Chat: React.FC<Props> = ({ user_id }) => {
 
   const toggleChatbox = async () => {
     const clientId = client?.id as string;
+    checkUser()
     const conversationExists = await ensureConversationExists(clientId, user_id);
     if (conversationExists) {
       setIsChatboxOpen(!isChatboxOpen);
@@ -120,6 +124,14 @@ const Chat: React.FC<Props> = ({ user_id }) => {
       }, 0);
     } else {
       alert('Já existe uma conversa ativa.');
+    }
+  };
+
+  const checkUser = async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push('/login');
     }
   };
 
@@ -198,7 +210,7 @@ const Chat: React.FC<Props> = ({ user_id }) => {
           isChatboxOpen ? "" : "hidden"
         }`}
       >
-        <div className="bg-[#141414] shadow-md rounded-lg max-w-lg w-full">
+        <div className="bg-[#141414] absolute bottom-16 shadow-md rounded-lg max-w-lg w-full">
           <div className="p-4 border-b bg-[#06613b] text-white rounded-t-lg flex justify-between items-center">
             <p className="text-lg font-semibold">Nome da empresa</p>
             <button

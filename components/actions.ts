@@ -316,6 +316,25 @@ export async function getBackGroundPhoto(): Promise<string | null> {
   }
 }
 
+export async function getMainLogo(): Promise<string | null> {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase.storage
+      .from("amazonshark")
+      .createSignedUrl("mainlogo.png", 60);
+
+    if (error) {
+      console.error("Error getting signed URL:", error);
+    }
+
+    return data?.signedUrl || null;
+  } catch (e) {
+    console.log("Exception getting signed URL:", e);
+    return null;
+  }
+}
+
 export async function getProfileById(id: string){
   const supabase = createClient();
   return supabase.from("profiles").select('*').eq("id", id)

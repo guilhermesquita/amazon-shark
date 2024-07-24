@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Companies } from "../types/companies";
 import { getPhotoByCompanie } from "../actions"; 
 import Chat from "../chat/Chat";
+import { ClientContextType, useClient } from "@/app/context/clientContext";
 
 type Props = {
-  company: Companies;
   onClose: () => void;
 };
 
-const CompanyDetails: React.FC<Props> = ({ company, onClose }) => {
+const CompanyDetails: React.FC<Props> = ({ onClose }) => {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const {company} = useClient() as ClientContextType
 
   useEffect(() => {
     const fetchPhotoUrl = async () => {
@@ -21,8 +22,8 @@ const CompanyDetails: React.FC<Props> = ({ company, onClose }) => {
   }, [company]);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative bg-black p-6 rounded-lg shadow-lg max-w-4xl w-full overflow-y-auto">
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-50">
+      <div className="relative bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full overflow-y-auto">
         <button onClick={onClose} className="absolute top-3 right-3 text-white-500 hover:text-white-700">
           Fechar
         </button>

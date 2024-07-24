@@ -7,6 +7,8 @@ import Profile from "@/components/usuario/Profile";
 import React, { useEffect, useState } from "react";
 import { getUser } from "@/components/actions";
 import Spinner from "@/components/Spinner/Spinner";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 type UserMetadata = {
   email: string;
@@ -18,6 +20,20 @@ export default function Dashboard() {
   const [user, setUser] = useState<UserMetadata | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      }
+    };
+
+    checkUser();
+  }, [router]);
+  
   useEffect(() => {
     async function fetchUser() {
       const fetchedUser = await getUser();
