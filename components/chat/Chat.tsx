@@ -113,10 +113,7 @@ const Chat: React.FC<Props> = ({ user_id }) => {
 
   const toggleChatbox = async () => {
     const clientId = client?.id as string;
-    if(!client?.id){
-      router.push('/login')
-      return;
-    }
+    checkUser()
     const conversationExists = await ensureConversationExists(clientId, user_id);
     if (conversationExists) {
       setIsChatboxOpen(!isChatboxOpen);
@@ -127,6 +124,14 @@ const Chat: React.FC<Props> = ({ user_id }) => {
       }, 0);
     } else {
       alert('Já existe uma conversa ativa.');
+    }
+  };
+
+  const checkUser = async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push('/login');
     }
   };
 

@@ -7,7 +7,7 @@ import { UserIdentity } from "@supabase/supabase-js";
 import { requestBodyPost } from "@/service/pixApi";
 import { MdOutlineVerified } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { ClientContextType, useClient } from "../context/clientContext";
+import { createClient } from "@/utils/supabase/client";
 
 export default function Index() {
   const { user } = useUser() as UserContextType;
@@ -15,13 +15,18 @@ export default function Index() {
   const [confirm, setConfirm] = useState(false);
 
   const router = useRouter();
-  const { client } = useClient() as ClientContextType;
 
   useEffect(() => {
-    if (!client?.id) {
-      router.push("/login");
-    }
-  });
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      }
+    };
+
+    checkUser();
+  }, [router]);
 
   const callbackQrCode = () => {
     if (!user) {
