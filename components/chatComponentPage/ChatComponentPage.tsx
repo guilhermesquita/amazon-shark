@@ -12,6 +12,7 @@ import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { MdOutlineVerified } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
 import Spinner from "../Spinner/Spinner";
+import { IoIosChatbubbles } from "react-icons/io";
 
 type contactTypes = {
   id: string;
@@ -392,7 +393,7 @@ const ChatWeb: React.FC = () => {
                 </button>
               ))
             ) : (
-              <div>nada achado</div>
+              <div><Spinner/></div>
             )}
           </ul>
         </div>
@@ -405,7 +406,6 @@ const ChatWeb: React.FC = () => {
                     {nameSelected[0].toUpperCase()}
                   </div>
                 <span className="block ml-2 font-bold text-gray-600">{nameSelected}</span>
-                {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span> */}
               </div>
             </div>
             <div
@@ -454,7 +454,10 @@ const ChatWeb: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div>Nada aqui!!</div>
+          <div className=" w-full h-full flex justify-center items-center">
+            <IoIosChatbubbles size={'60px'}/>
+            Inicie uma conversa
+          </div>
         )}
       </div>
     </div>
