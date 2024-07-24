@@ -24,7 +24,7 @@ export const createPaymentPix = async (bodyRequest: requestBodyPost) => {
     };
 
     const body = {
-      transaction_amount: 1,
+      transaction_amount: 57,
       payment_method_id: "pix",
       payer: {
         first_name: bodyRequest.first_name,

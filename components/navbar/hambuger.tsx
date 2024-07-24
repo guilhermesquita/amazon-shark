@@ -26,9 +26,9 @@ const HamburgerMenu: React.FC = () => {
       </button>
       <div className={`absolute top-12 right-0 w-40 bg-white border rounded-lg shadow-lg transition-transform duration-300 ${isOpen ? 'transform scale-100' : 'transform scale-0'}`}>
         <ul className="flex flex-col p-2 space-y-2">
-            {pages.map((page) => {
+            {pages.map((page, index) => {
                 return (
-                    <li><Link href={page.href} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">{page.name}</Link></li>
+                    <li key={index}><Link href={page.href} className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">{page.name}</Link></li>
                 );
             })}
                 
