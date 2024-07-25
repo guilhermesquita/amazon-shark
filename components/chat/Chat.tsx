@@ -8,6 +8,8 @@ import React, {
 import {
   createConversation,
   getAllMessages,
+  getClientById,
+  getCompanyById,
   getConversationsExists,
   sendMessage,
 } from "../actions";
@@ -31,15 +33,27 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { client } = useClient() as ClientContextType;
   const chatboxRef = useRef<HTMLDivElement>(null);
+  const [selectedContact, setSelectedContact] = useState<string[]>([]);
 
   const router = useRouter()
 
   useEffect(() => {
     async function fetchMessages() {
+
+      const contact = await getClientById(user_id)
+      const contactArray = contact.data as any[]
+      const name = contactArray[0].full_name
+      
+      const company = await getCompanyById(company_id)
+      const companyArray = company.data as any[]
+      const nameCompany = companyArray[0].name
+
+      setSelectedContact([name, nameCompany])
+
       const conversation = await getConversationsExists(
         client?.id as string,
         user_id,
-        company_id,
+        company_id
       );
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
@@ -215,11 +229,11 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
       >
         <div className="bg-[#141414] absolute bottom-16 shadow-md rounded-lg max-w-lg w-full">
           <div className="p-4 border-b bg-[#06613b] text-white rounded-t-lg flex justify-between items-center">
-            <p className="text-lg font-semibold">Nome da empresa</p>
+            <p className="text-lg font-semibold">{`${selectedContact[0]} da ${selectedContact[1]}`}</p>
             <button
               id="close-chat"
               className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
-              onClick={toggleChatbox}
+              onClick={() => setIsChatboxOpen(false)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -371,7 +371,8 @@ export async function createConversation(conversationData: Conversations){
       .insert(
         { 
           profile1_id: conversationData.profile1_id,
-          profile2_id: conversationData.profile2_id
+          profile2_id: conversationData.profile2_id,
+          company_id: conversationData.company_id,
         }
       );
 
