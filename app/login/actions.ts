@@ -32,26 +32,22 @@ export async function signUp(formData: FormData) {
   const full_name = formData.get("full_name") as string;
   const cpf = formData.get("cpf") as string;
   const phone = formData.get("phone") as string;
-  const interest = formData.get("interest") as string;
-  const accountType = formData.get("accountType") as string;
 
-  const { error } = await supabase.auth.signUp({
+  const teste = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         full_name: full_name,
         cpf: cpf,
-        phone: phone,
-        interest: interest,
-        accountType: accountType,
+        phone: phone
       },
       emailRedirectTo: `${origin}/auth/callback`,
     },
   });
 
-  if (error) {
-    return redirect("/login?message=Could not authenticate user");
+  if (teste.error) {
+    return redirect(`/login?message=Could not authenticate user error: ${teste.error.message}`);
   }
 
   return redirect("/login?message=Check email to continue sign in process");

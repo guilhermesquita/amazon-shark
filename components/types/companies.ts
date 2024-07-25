@@ -5,11 +5,10 @@ export type Companies = {
     cnpj: string;
     sector: string;
     description: string;
-    endereco: string;
+    estado: string;
     social_links: string;
     financeiro: string;
-    objetivo: string;
+    presentation: string;
     image_url: string;
-    youtube_link: string;
     pitch: string;
   };

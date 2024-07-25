@@ -8,11 +8,6 @@ import { Companies } from "./types/companies";
 import { Conversations } from "./types/conversations";
 import { MessagesDTO } from "./types/dto/messagesDTO";
 
-// interface dtoConversation {
-//   profile1_id: string;
-//   profile2_id: string;
-// }
-
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
 
@@ -388,12 +383,6 @@ export async function createConversation(conversationData: Conversations){
     console.log("Erro ao enviar mensagem:", error.message);
     return null;
   }
-
-  
-  // supabase.from("conversations").insert({
-  //   profile1_id: conversationData.profile1_id,
-  //   profile2_id: conversationData.profile2_id,
-  // })
 }
 
 export async function getAllMessages(conversationId: number){

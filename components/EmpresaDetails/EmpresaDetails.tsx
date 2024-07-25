@@ -14,6 +14,7 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
   const { client } = useClient() as ClientContextType;
 
   useEffect(() => {
+    console.log(company)
     const fetchPhotoUrl = async () => {
       const url = await getPhotoByCompanie(company);
       setPhotoUrl(url);
@@ -53,7 +54,7 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
                 Setor: {company.sector}
               </p>
               <p className="text-white-900 font-semibold">
-                Endereço: {company.endereco}
+                Estado: {company.estado}
               </p>
             </div>
 
@@ -63,21 +64,9 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
           </div>
         </div>
         <div className="mt-6">
-          <h3 className="text-2xl font-semibold mb-2">Objetivo</h3>
-          <p className="text-white-700">{company.objetivo}</p>
+          <h3 className="text-2xl font-semibold mb-2">Apresentação</h3>
+          <p className="text-white-700">{company.presentation}</p>
         </div>
-        {company.youtube_link && (
-          <div className="mt-6">
-            <h3 className="text-2xl font-semibold mb-2">Apresentação</h3>
-            <iframe
-              width="100%"
-              height="315"
-              src={`${company.youtube_link}`}
-              title={company.name}
-              allowFullScreen
-            />
-          </div>
-        )}
         {company.social_links && (
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-2">Social Links</h3>
@@ -119,6 +108,10 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
             </a>
           </div>
         )}
+        <div className="mt-6">
+          <h3 className="text-2xl font-semibold mb-2">Objetivo</h3>
+          <p className="text-white-700">{company.description}</p>
+        </div>
       </div>
     </div>
   );

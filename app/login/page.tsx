@@ -95,39 +95,6 @@ export default function Login({ searchParams }: { searchParams: { message: strin
               placeholder="(00) 00000-0000"
               required
             />
-            <label className="text-md" htmlFor="interest">
-              Interessado em
-            </label>
-            <select
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              name="interest"
-              required
-            >
-              <option value="investir">Investir</option>
-              <option value="captar">Captar Investimento</option>
-            </select>
-            <label className="text-md" htmlFor="accountType">
-              Tipo de Conta
-            </label>
-            <div className="flex flex-row mb-6">
-              <label className="flex items-center mr-4">
-                <input
-                  type="radio"
-                  name="accountType"
-                  value="fisica"
-                  defaultChecked
-                />
-                <span className="ml-2">Pessoa Física</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="accountType"
-                  value="juridica"
-                />
-                <span className="ml-2">Pessoa Jurídica</span>
-              </label>
-            </div>
           </>
         )}
 
