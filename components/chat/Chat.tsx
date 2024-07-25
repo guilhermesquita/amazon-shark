@@ -22,9 +22,10 @@ interface Message {
 
 type Props = {
   user_id: string;
+  company_id: number;
 };
 
-const Chat: React.FC<Props> = ({ user_id }) => {
+const Chat: React.FC<Props> = ({ user_id, company_id }) => {
   const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -37,7 +38,8 @@ const Chat: React.FC<Props> = ({ user_id }) => {
     async function fetchMessages() {
       const conversation = await getConversationsExists(
         client?.id as string,
-        user_id
+        user_id,
+        company_id,
       );
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
@@ -136,9 +138,9 @@ const Chat: React.FC<Props> = ({ user_id }) => {
   };
 
   const ensureConversationExists = async (clientId: string, userId: string): Promise<boolean> => {
-    const conversation = await getConversationsExists(clientId, userId);
+    const conversation = await getConversationsExists(clientId, userId, company_id);
     if (!conversation.data?.length) {
-      await createConversation({ profile1_id: clientId, profile2_id: userId });
+      await createConversation({ profile1_id: clientId, profile2_id: userId, company_id: company_id });
       return true;
     }
     return false;
@@ -155,7 +157,8 @@ const Chat: React.FC<Props> = ({ user_id }) => {
     if (client?.id) {
       const conversation = await getConversationsExists(
         client?.id as string,
-        user_id
+        user_id,
+        company_id
       );
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;

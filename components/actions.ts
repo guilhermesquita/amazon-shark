@@ -340,8 +340,16 @@ export async function getProfileById(id: string){
   return supabase.from("profiles").select('*').eq("id", id)
 }
 
-export async function getConversationsExists(sender: string, recipient: string){
+export async function getCompanyById(id: number){
+  const supabase = createClient()
+  return supabase.from("companies").select('*').eq("company_id", id)
+}
+
+export async function getConversationsExists(sender: string, recipient: string, companyId?: number){
   const supabase = createClient();
+  if(companyId){
+    return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient).eq("company_id", companyId)
+  }
   return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient)
 }
 

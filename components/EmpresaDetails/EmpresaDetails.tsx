@@ -59,7 +59,7 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
 
             {client?.id === company.user_id ? (
               null
-            ) : <Chat user_id={company.user_id} />}
+            ) : <Chat user_id={company.user_id} company_id={company.id}/>}
           </div>
         </div>
         <div className="mt-6">
