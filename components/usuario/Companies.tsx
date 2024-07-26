@@ -16,6 +16,7 @@ import { Companies } from "../types/companies";
 import { MdEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
+import Modal from "@/app/modal/Modal";
 
 const CompaniesComponent = () => {
   const [companies, setCompanies] = useState<Companies[]>([]);
@@ -149,6 +150,7 @@ const CompaniesComponent = () => {
                         gap: "10px",
                       }}
                     >
+                      
                       <Button
                         onClick={() => handleEditCompanyClick(company)}
                         variant="outlined"
@@ -157,22 +159,7 @@ const CompaniesComponent = () => {
                         <MdEdit size={20} />
                       </Button>
 
-                      <Button
-                        onClick={() => handleDeleteCompany(company.company_id)}
-                        sx={{
-                          backgroundColor: "#CF1C1C",
-                          color: "white",
-                          fontWeight: "bold",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                          "&:hover": {
-                            backgroundColor: "#EC3232",
-                          },
-                          transition: "background-color 0.3s ease-in-out",
-                        }}
-                      >
-                        <FaTrash />
-                      </Button>
+                      <Modal company_id={company.company_id}/>
                     </div>
                   </CardContent>
                 </Card>
