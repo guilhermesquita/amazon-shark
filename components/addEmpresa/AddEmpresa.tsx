@@ -128,8 +128,6 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
       financeiro: financeiro_url,
     };
 
-    console.log(companyDataWithUserId);
-
     let result;
     if (existingCompany) {
       result = await updateCompany(companyDataWithUserId as Companies);
