@@ -34,8 +34,8 @@ export async function signUp(formData: FormData) {
   const phone = formData.get("phone") as string;
 
   const teste = await supabase.auth.signUp({
-    email,
-    password,
+    email: email,
+    password: password,
     options: {
       data: {
         full_name: full_name,
@@ -50,5 +50,5 @@ export async function signUp(formData: FormData) {
     return redirect(`/login?message=Could not authenticate user error: ${teste.error.message}`);
   }
 
-  return redirect("/login?message=Check email to continue sign in process");
+  return redirect("/login?message=Confirme o Email (Verifique a caixa de spam)");
 }

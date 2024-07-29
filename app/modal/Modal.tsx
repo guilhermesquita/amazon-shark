@@ -103,7 +103,7 @@ const Modal: React.FC<props> = ({company_id}) => {
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
                           Você tem certeza que quer remover essa empresa
-                          cadastrada?. Após essa ação os dados serão
+                          cadastrada? Após essa ação os dados serão
                           irrecuperáveis
                         </p>
                       </div>
