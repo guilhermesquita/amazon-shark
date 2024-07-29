@@ -46,3 +46,13 @@ export const createPaymentPix = async (bodyRequest: requestBodyPost) => {
     throw new Error("Could not load user");
   }
 };
+
+export const getPaymentPix = async (id: number) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_BEARER_TOKEN_PIX}`,
+    },
+  };
+  const response = await axios.get(`${baseUrl}/${id}`, config);
+  return response.data;
+}

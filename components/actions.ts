@@ -355,6 +355,11 @@ export async function getProfileById(id: string){
   return supabase.from("profiles").select('*').eq("id", id)
 }
 
+export async function editVerificationById(id: string){
+  const supabase = createClient();
+  return supabase.from("profiles").update({verification: true}).eq("id", id)
+}
+
 export async function getCompanyById(id: number){
   const supabase = createClient()
   return supabase.from("companies").select('*').eq("company_id", id)
