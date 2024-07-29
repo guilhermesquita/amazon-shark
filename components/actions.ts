@@ -8,11 +8,6 @@ import { Companies } from "./types/companies";
 import { Conversations } from "./types/conversations";
 import { MessagesDTO } from "./types/dto/messagesDTO";
 
-// interface dtoConversation {
-//   profile1_id: string;
-//   profile2_id: string;
-// }
-
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
 
@@ -127,9 +122,29 @@ export async function deleteCompany(companyId: number) {
 export async function updateCompany(companyData: Companies) {
   const supabase = createClient();
 
+  const companyId = await supabase.from("companies").select("*")
+  .eq("company_id", companyData.company_id)
+
+  const dataCompanyId = companyId.data as any[]
+
+  const dataCompany = {
+    company_id: companyData.company_id || dataCompanyId[0].id,
+    user_id: companyData.user_id || dataCompanyId[0].user_id,
+    name: companyData.name || dataCompanyId[0].name,
+    cnpj: companyData.cnpj || dataCompanyId[0].cpnj,
+    sector: companyData.sector || dataCompanyId[0].sector,
+    description: companyData.description || dataCompanyId[0].description,
+    estado: companyData.estado || dataCompanyId[0].estado,
+    social_links: companyData.social_links || dataCompanyId[0].social_links,
+    financeiro: companyData.financeiro.length > 1 ? companyData.financeiro: dataCompanyId[0].id,
+    presentation: companyData.presentation || dataCompanyId[0].presentation,
+    image_url: companyData.image_url.length > 1 ? companyData.image_url : dataCompanyId[0].image_url,
+    pitch: companyData.pitch.length > 1 ? companyData.pitch : dataCompanyId[0].pitch,
+  }
+
   const { data, error } = await supabase
     .from("companies")
-    .update(companyData)
+    .update(dataCompany)
     .eq("company_id", companyData.company_id)
     .select();
 
@@ -340,8 +355,16 @@ export async function getProfileById(id: string){
   return supabase.from("profiles").select('*').eq("id", id)
 }
 
-export async function getConversationsExists(sender: string, recipient: string){
+export async function getCompanyById(id: number){
+  const supabase = createClient()
+  return supabase.from("companies").select('*').eq("company_id", id)
+}
+
+export async function getConversationsExists(sender: string, recipient: string, companyId?: number){
   const supabase = createClient();
+  if(companyId){
+    return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient).eq("company_id", companyId)
+  }
   return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient)
 }
 
@@ -363,7 +386,8 @@ export async function createConversation(conversationData: Conversations){
       .insert(
         { 
           profile1_id: conversationData.profile1_id,
-          profile2_id: conversationData.profile2_id
+          profile2_id: conversationData.profile2_id,
+          company_id: conversationData.company_id,
         }
       );
 
@@ -379,12 +403,6 @@ export async function createConversation(conversationData: Conversations){
     console.log("Erro ao enviar mensagem:", error.message);
     return null;
   }
-
-  
-  // supabase.from("conversations").insert({
-  //   profile1_id: conversationData.profile1_id,
-  //   profile2_id: conversationData.profile2_id,
-  // })
 }
 
 export async function getAllMessages(conversationId: number){

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import AddEmpresa from "../addEmpresa/AddEmpresa";
-import { getCompanies, getUser, deleteCompany, getPhotoByCompanie } from "../actions";
+import {
+  getCompanies,
+  getUser,
+  deleteCompany,
+  getPhotoByCompanie,
+} from "../actions";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -8,6 +13,10 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import CardMedia from "@mui/material/CardMedia";
 import { Companies } from "../types/companies";
+import { MdEdit } from "react-icons/md";
+import { FaTrash } from "react-icons/fa";
+import { CiSquarePlus } from "react-icons/ci";
+import Modal from "@/app/modal/Modal";
 
 const CompaniesComponent = () => {
   const [companies, setCompanies] = useState<Companies[]>([]);
@@ -29,7 +38,8 @@ const CompaniesComponent = () => {
       await Promise.all(
         companiesData.map(async (company: Companies) => {
           const imageUrl = await getPhotoByCompanie(company);
-          imageUrls[company.company_id] = imageUrl || "https://via.placeholder.com/150x150.png";
+          imageUrls[company.company_id] =
+            imageUrl || "https://via.placeholder.com/150x150.png";
         })
       );
       setImageUrls(imageUrls);
@@ -89,14 +99,19 @@ const CompaniesComponent = () => {
             <Grid item xs={6} textAlign="right">
               <Button
                 onClick={handleAddCompanyClick}
-                variant="outlined"
-                style={{
-                  backgroundColor: "var(--btn-background)",
-                  color: "var(--foreground)",
+                variant="contained"
+                
+                sx={{
+                  backgroundColor: "transparent",
+                  color: "black",
+                  "&:hover": {
+                    backgroundColor: "#439D5D",
+                    color: "white"
+                  },
                 }}
-                className="hover:bg-gray-400"
               >
-                Adicionar Nova Empresa
+                <CiSquarePlus size={40} />
+                <p>Adicionar Nova Empresa</p>
               </Button>
             </Grid>
             {companies.map((company) => (
@@ -111,14 +126,21 @@ const CompaniesComponent = () => {
                   <CardMedia
                     component="img"
                     sx={{ width: 150 }}
-                    image={imageUrls[company.company_id] || "https://via.placeholder.com/150x150.png"}
+                    image={
+                      imageUrls[company.company_id] ||
+                      "https://via.placeholder.com/150x150.png"
+                    }
                     alt="Company Image"
                   />
                   <CardContent sx={{ flex: "1" }}>
-                    <Typography variant="h6" component="div" className="text-white">
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      className="text-black"
+                    >
                       {company.name}
                     </Typography>
-                    <Typography variant="body2" className="text-white">
+                    <Typography variant="body2" className="text-black">
                       {company.description}
                     </Typography>
                     <div
@@ -128,21 +150,16 @@ const CompaniesComponent = () => {
                         gap: "10px",
                       }}
                     >
+                      
                       <Button
                         onClick={() => handleEditCompanyClick(company)}
                         variant="outlined"
                         className="text-white hover:bg-red-2000"
                       >
-                        Editar Empresa
+                        <MdEdit size={20} />
                       </Button>
 
-                      <Button
-                        onClick={() => handleDeleteCompany(company.company_id)}
-                        variant="outlined"
-                        className="text-white hover:bg-red-2000"
-                      >
-                        Excluir Empresa
-                      </Button>
+                      <Modal company_id={company.company_id}/>
                     </div>
                   </CardContent>
                 </Card>

@@ -4,8 +4,6 @@ export type Client = {
     email: string;
     cpf: string;
     phone: string;
-    interest: string;
-    accounttype: string;
     verification: boolean;
     updatedAt: Date | null;
 }

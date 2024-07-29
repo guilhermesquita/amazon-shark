@@ -2,6 +2,8 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
   getAllMessages,
+  getClientById,
+  getCompanyById,
   getConversationsExists,
   getConversationsReceivedAll,
   getConversationsSendedAll,
@@ -17,6 +19,7 @@ import { IoIosChatbubbles } from "react-icons/io";
 type contactTypes = {
   id: string;
   name: string;
+  companyId?: number;
   avatar: string;
   verified: boolean;
 };
@@ -32,7 +35,9 @@ const ChatWeb: React.FC = () => {
   const [contacts, setContacts] = useState<contactTypes[] | null>(null);
   const [userMessage, setUserMessage] = useState<string>("");
 
-  const [proposalContacts, setProposalContacts] = useState<contactTypes[] | null>(null);
+  const [proposalContacts, setProposalContacts] = useState<
+    contactTypes[] | null
+  >(null);
 
   const [selectedContactIndex, setSelectedContactIndex] = useState<
     number | null
@@ -65,11 +70,17 @@ const ChatWeb: React.FC = () => {
               const findProfile = await getProfileById(
                 conversation.profile2_id
               );
+
+              const company = await getCompanyById(conversation.company_id);
+              const arrCompany = company.data as any[];
+              const nameCompany = arrCompany[0].name;
+              
               const profile = findProfile.data as any[];
               return {
-                name: profile[0].full_name,
+                name: `${profile[0].full_name.split(" ")[0]} da ${nameCompany}`,
                 id: profile[0].id,
                 avatar: profile[0].full_name[0].toUpperCase(),
+                companyId: arrCompany[0].company_id,
                 verified: profile[0].verification,
               };
             })
@@ -110,16 +121,21 @@ const ChatWeb: React.FC = () => {
     fetchConversationsProposal();
   }, [client?.id]);
 
-  const teste = (contact: contactTypes, index: number) => {
+  const teste = async (contact: contactTypes, index: number) => {
     setIsChatboxOpen(true);
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
     setNameSelected(contact.name);
 
+    const company = await getCompanyById(Number(contact.companyId));
+    const arrCompany = company.data as any[];
+    const idCompany = arrCompany[0].company_id;
+
     async function fetchMessages() {
       const conversation = await getConversationsExists(
         client?.id as string,
-        contact.id
+        contact.id,
+        idCompany
       );
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
@@ -140,7 +156,7 @@ const ChatWeb: React.FC = () => {
     setIsChatboxOpen(true);
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
-    setNameSelected(contact.name)
+    setNameSelected(contact.name);
 
     async function fetchMessages() {
       const conversation = await getConversationsExists(
@@ -148,7 +164,6 @@ const ChatWeb: React.FC = () => {
         client?.id as string
       );
       if (conversation.data?.length) {
-
         setTimeout(() => {
           if (chatboxRef.current) {
             chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
@@ -256,9 +271,15 @@ const ChatWeb: React.FC = () => {
 
   const addUserMessage = async (message: string) => {
     if (client?.id) {
+
+      const selectClient = await getClientById(selectedContactId as string)
+      const arrClientSelected = selectClient.data as any[]
+      const idCompany = arrClientSelected[0].company_id
+
       const conversation = await getConversationsExists(
         client?.id as string,
-        selectedContactId as string
+        selectedContactId as string,
+        idCompany
       );
 
       const conversationProposal = await getConversationsExists(
@@ -266,7 +287,7 @@ const ChatWeb: React.FC = () => {
         client?.id as string
       );
 
-      if(conversationProposal.data?.length){
+      if (conversationProposal.data?.length) {
         const idConversation = conversationProposal.data[0].id;
         await sendMessage({
           content: message,
@@ -329,10 +350,10 @@ const ChatWeb: React.FC = () => {
                   className={`flex 
                     overflow-y-auto
                     items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
-                    selectedContactIndex === index
-                      ? "bg-gray-300"
-                      : "hover:bg-gray-100"
-                  } focus:outline-none`}
+                      selectedContactIndex === index
+                        ? "bg-gray-300"
+                        : "hover:bg-gray-100"
+                    } focus:outline-none`}
                 >
                   <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
                     {contact.avatar}
@@ -354,7 +375,9 @@ const ChatWeb: React.FC = () => {
                 </button>
               ))
             ) : (
-              <div><Spinner/></div>
+              <div>
+                <Spinner />
+              </div>
             )}
             <h3 className="ml-2 mt-5 font-bold">Propostas recebidas</h3>
             {proposalContacts ? (
@@ -393,7 +416,9 @@ const ChatWeb: React.FC = () => {
                 </button>
               ))
             ) : (
-              <div><Spinner/></div>
+              <div>
+                <Spinner />
+              </div>
             )}
           </ul>
         </div>
@@ -402,10 +427,12 @@ const ChatWeb: React.FC = () => {
           <div className="hidden lg:col-span-2 lg:block">
             <div>
               <div className="relative flex items-center p-3 border-b border-gray-300">
-              <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                    {nameSelected[0].toUpperCase()}
-                  </div>
-                <span className="block ml-2 font-bold text-gray-600">{nameSelected}</span>
+                <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                  {nameSelected[0].toUpperCase()}
+                </div>
+                <span className="block ml-2 font-bold text-gray-600">
+                  {nameSelected}
+                </span>
               </div>
             </div>
             <div
@@ -455,7 +482,7 @@ const ChatWeb: React.FC = () => {
           </div>
         ) : (
           <div className=" w-full h-full flex justify-center items-center">
-            <IoIosChatbubbles size={'60px'}/>
+            <IoIosChatbubbles size={"60px"} />
             Inicie uma conversa
           </div>
         )}

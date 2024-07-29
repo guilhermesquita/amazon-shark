@@ -183,9 +183,9 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
             />
             <input
               type="text"
-              name="endereco"
-              placeholder="Endereço"
-              value={companyData.endereco || ""}
+              name="estado"
+              placeholder="Estado"
+              value={companyData.estado || ""}
               onChange={handleCompanyChange}
               className="p-2 border rounded flex-1 text-gray-500"
             />
@@ -235,14 +235,6 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
             onChange={handleCompanyChange}
             className="p-2 border rounded text-gray-500"
           />
-          <input
-            type="text"
-            name="youtube_link"
-            placeholder="Seu vídeo no Youtube"
-            value={companyData.youtube_link || ""}
-            onChange={handleCompanyChange}
-            className="p-2 border rounded text-gray-500"
-          />
           <h6>Financeiro da empresa:</h6>
           <input
             type="file"
@@ -254,9 +246,9 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
           <h2>Objetivos</h2>
           <input
             type="text"
-            name="objetivo"
+            name="presentation"
             placeholder="Objetivo da empresa"
-            value={companyData.objetivo || ""}
+            value={companyData.presentation || ""}
             onChange={handleCompanyChange}
             className="p-2 border rounded text-gray-500"
           />
