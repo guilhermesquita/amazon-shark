@@ -1,49 +1,28 @@
 "use client";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import {
-  getAllMessages,
-  getClientById,
-  getCompanyById,
-  getConversationsExists,
-  getConversationsReceivedAll,
-  getConversationsSendedAll,
-  getProfileById,
-  sendMessage,
-} from "../actions";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { MdOutlineVerified } from "react-icons/md";
-import { createClient } from "@/utils/supabase/client";
 import Spinner from "../Spinner/Spinner";
 import { IoIosChatbubbles } from "react-icons/io";
-
-type contactTypes = {
-  id: string;
-  name: string;
-  companyId?: number;
-  avatar: string;
-  verified: boolean;
-};
-
-interface Message {
-  text: string;
-  sender: string;
-}
+import { useConversations } from "@/hooks/useMessages";
 
 const ChatWeb: React.FC = () => {
   const { client } = useClient() as ClientContextType;
 
-  const [contacts, setContacts] = useState<contactTypes[] | null>(null);
+  const {
+    contacts,
+    proposalContacts,
+    messages,
+    openConversation,
+    openConversationProposal,
+    addUserMessage,
+  } = useConversations(client);
+
   const [userMessage, setUserMessage] = useState<string>("");
-
-  const [proposalContacts, setProposalContacts] = useState<
-    contactTypes[] | null
-  >(null);
-
   const [selectedContactIndex, setSelectedContactIndex] = useState<
     number | null
   >(null);
   const chatboxRef = useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(
     null
   );
@@ -57,185 +36,6 @@ const ChatWeb: React.FC = () => {
       chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
     }
   }, [messages]);
-
-  useEffect(() => {
-    async function fetchConversations() {
-      if (client?.id) {
-        const propostaChat = await getConversationsSendedAll(client.id);
-        const data = propostaChat.data as any[];
-
-        if (data) {
-          const contactsData = await Promise.all(
-            data.map(async (conversation) => {
-              const findProfile = await getProfileById(
-                conversation.profile2_id
-              );
-
-              const company = await getCompanyById(conversation.company_id);
-              const arrCompany = company.data as any[];
-              const nameCompany = arrCompany[0].name;
-              
-              const profile = findProfile.data as any[];
-              return {
-                name: `${profile[0].full_name.split(" ")[0]} da ${nameCompany}`,
-                id: profile[0].id,
-                avatar: profile[0].full_name[0].toUpperCase(),
-                companyId: arrCompany[0].company_id,
-                verified: profile[0].verification,
-              };
-            })
-          );
-          setContacts(contactsData);
-        }
-      }
-    }
-
-    fetchConversations();
-  }, [client?.id]);
-
-  useEffect(() => {
-    async function fetchConversationsProposal() {
-      if (client?.id) {
-        const propostaChat = await getConversationsReceivedAll(client.id);
-        const data = propostaChat.data as any[];
-        if (data) {
-          const contactsData = await Promise.all(
-            data.map(async (conversation) => {
-              const findProfile = await getProfileById(
-                conversation.profile1_id
-              );
-              const profile = findProfile.data as any[];
-              return {
-                name: profile[0].full_name,
-                id: profile[0].id,
-                avatar: profile[0].full_name[0].toUpperCase(),
-                verified: profile[0].verification,
-              };
-            })
-          );
-          setProposalContacts(contactsData);
-        }
-      }
-    }
-
-    fetchConversationsProposal();
-  }, [client?.id]);
-
-  const teste = async (contact: contactTypes, index: number) => {
-    setIsChatboxOpen(true);
-    setSelectedContactId(contact.id);
-    setSelectedContactIndex(index);
-    setNameSelected(contact.name);
-
-    const company = await getCompanyById(Number(contact.companyId));
-    const arrCompany = company.data as any[];
-    const idCompany = arrCompany[0].company_id;
-
-    async function fetchMessages() {
-      const conversation = await getConversationsExists(
-        client?.id as string,
-        contact.id,
-        idCompany
-      );
-      if (conversation.data?.length) {
-        const idConversation = conversation.data[0].id;
-        const fetchedMessages = await getAllMessages(idConversation);
-        if (fetchedMessages.data) {
-          const formattedMessages = fetchedMessages.data.map((item: any) => ({
-            text: item.content,
-            sender: item.sender_id,
-          }));
-          setMessages(formattedMessages);
-        }
-      }
-    }
-    fetchMessages();
-  };
-
-  const teste2 = (contact: contactTypes, index: number) => {
-    setIsChatboxOpen(true);
-    setSelectedContactId(contact.id);
-    setSelectedContactIndex(index);
-    setNameSelected(contact.name);
-
-    async function fetchMessages() {
-      const conversation = await getConversationsExists(
-        contact.id,
-        client?.id as string
-      );
-      if (conversation.data?.length) {
-        setTimeout(() => {
-          if (chatboxRef.current) {
-            chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
-          }
-        }, 0);
-
-        const idConversation = conversation.data[0].id;
-        const fetchedMessages = await getAllMessages(idConversation);
-        if (fetchedMessages.data) {
-          const formattedMessages = fetchedMessages.data.map((item: any) => ({
-            text: item.content,
-            sender: item.sender_id,
-          }));
-          setMessages(formattedMessages);
-        }
-      }
-    }
-    fetchMessages();
-  };
-
-  useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel("messages-component")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "messages",
-        },
-        (payload: any) => {
-          const newMessage = {
-            text: payload.new.content,
-            sender: payload.new.sender_id,
-          };
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel("conversations-component")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "conversations",
-        },
-        (payload: any) => {
-          if (
-            payload.eventType === "INSERT" ||
-            payload.eventType === "UPDATE"
-          ) {
-            console.log(payload);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -252,7 +52,7 @@ const ChatWeb: React.FC = () => {
 
   const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
-      addUserMessage(userMessage);
+      addUserMessage(userMessage, selectedContactId as string);
       setUserMessage("");
     }
   }, [userMessage]);
@@ -268,44 +68,6 @@ const ChatWeb: React.FC = () => {
       window.removeEventListener("keyup", handleKeyPress);
     };
   }, [handleSendMessage]);
-
-  const addUserMessage = async (message: string) => {
-    if (client?.id) {
-
-      const selectClient = await getClientById(selectedContactId as string)
-      const arrClientSelected = selectClient.data as any[]
-      const idCompany = arrClientSelected[0].company_id
-
-      const conversation = await getConversationsExists(
-        client?.id as string,
-        selectedContactId as string,
-        idCompany
-      );
-
-      const conversationProposal = await getConversationsExists(
-        selectedContactId as string,
-        client?.id as string
-      );
-
-      if (conversationProposal.data?.length) {
-        const idConversation = conversationProposal.data[0].id;
-        await sendMessage({
-          content: message,
-          conversation_id: idConversation,
-          sender_id: client.id ?? "0",
-        });
-      }
-
-      if (conversation.data?.length) {
-        const idConversation = conversation.data[0].id;
-        await sendMessage({
-          content: message,
-          conversation_id: idConversation,
-          sender_id: client.id ?? "0",
-        });
-      }
-    }
-  };
 
   return (
     <div className="container mx-auto bg-white">
@@ -345,7 +107,11 @@ const ChatWeb: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => {
-                    teste(contact, index);
+                    setIsChatboxOpen(true);
+                    setSelectedContactId(contact.id);
+                    setSelectedContactIndex(index);
+                    setNameSelected(contact.name);
+                    openConversation(contact);
                   }}
                   className={`flex 
                     overflow-y-auto
@@ -385,10 +151,11 @@ const ChatWeb: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => {
-                    // setIsChatboxOpen(true);
-                    // setSelectedContactId(contact.id);
-                    // setSelectedContactIndex(index);
-                    teste2(contact, index);
+                    setIsChatboxOpen(true);
+                    setSelectedContactId(contact.id);
+                    setSelectedContactIndex(index);
+                    setNameSelected(contact.name);
+                    openConversationProposal(contact);
                   }}
                   className={`overflow-y-auto flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
                     selectedContactIndex === index
