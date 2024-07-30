@@ -1,0 +1,75 @@
+import { Client } from "../../types/client";
+import { ChangeEvent, RefObject } from "react";
+
+interface MessageProps {
+  client: Client;
+  messages: any[];
+  nameSelected: string;
+  chatboxRef: RefObject<HTMLDivElement>
+  userMessage: string
+  setUserMessage: (value: string) => void
+  handleSendMessage: () => void
+}
+
+const MessageList: React.FC<MessageProps> = ({client, messages, nameSelected, chatboxRef, userMessage, setUserMessage, handleSendMessage}) => {
+  return (
+    <div className="hidden lg:col-span-2 lg:block">
+            <div>
+              <div className="relative flex items-center p-3 border-b border-gray-300">
+                <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                  {nameSelected[0].toUpperCase()}
+                </div>
+                <span className="block ml-2 font-bold text-gray-600">
+                  {nameSelected}
+                </span>
+              </div>
+            </div>
+            <div
+              id="chatbox"
+              className="p-4 max-h-80 overflow-y-auto"
+              ref={chatboxRef}
+            >
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`mb-2 ${
+                    message.sender === client?.id ? "text-right" : ""
+                  }`}
+                >
+                  <p
+                    className={`${
+                      message.sender === client?.id
+                        ? "bg-[#073321] text-white"
+                        : "bg-gray-200 text-gray-700"
+                    } rounded-lg py-2 px-4 inline-block`}
+                  >
+                    {message.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t flex">
+              <input
+                id="user-input"
+                type="text"
+                placeholder="Type a message"
+                autoComplete="off"
+                className="w-full px-3 py-2 border rounded-l-md outline-none bg-[#0e0d0d] text-white"
+                value={userMessage}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setUserMessage(e.target.value)
+                }
+              />
+              <button
+                id="send-button"
+                className="bg-[#06613b] text-white px-4 py-2 rounded-r-md hover:bg-[#07271a] transition duration-300"
+                onClick={handleSendMessage}
+              >
+                Enviar
+              </button>
+            </div>
+          </div>
+  );
+}
+
+export default MessageList;

@@ -1,17 +1,16 @@
 "use client";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
-import { MdOutlineVerified } from "react-icons/md";
-import Spinner from "../Spinner/Spinner";
 import { IoIosChatbubbles } from "react-icons/io";
-import { useConversations } from "@/hooks/useMessages";
+import { ContactTypes, useConversations } from "@/hooks/useMessages";
+import ContactList from "./ContactList/ContactList";
+import { Client } from "../types/client";
+import MessageList from "./MessageList/MessageList";
 
 const ChatWeb: React.FC = () => {
   const { client } = useClient() as ClientContextType;
 
   const {
-    contacts,
-    proposalContacts,
     messages,
     openConversation,
     openConversationProposal,
@@ -49,6 +48,22 @@ const ChatWeb: React.FC = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  const HandleOpenMessages = (contact: ContactTypes, index: number) => {
+    setIsChatboxOpen(true);
+    setSelectedContactId(contact.id);
+    setSelectedContactIndex(index);
+    setNameSelected(contact.name);
+    openConversation(contact);
+  };
+
+  const HandleOpenMessagesProposal = (contact: ContactTypes, index: number) => {
+    setIsChatboxOpen(true);
+    setSelectedContactId(contact.id);
+    setSelectedContactIndex(index);
+    setNameSelected(contact.name);
+    openConversationProposal(contact);
+  };
 
   const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
@@ -99,154 +114,20 @@ const ChatWeb: React.FC = () => {
           </div>
 
           <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Conversas</h2>
-
-          <ul className="min-h-3/5">
-            <h3 className="ml-2 mt-2 font-bold">Propostas Enviadas</h3>
-            {contacts ? (
-              contacts.map((contact, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setIsChatboxOpen(true);
-                    setSelectedContactId(contact.id);
-                    setSelectedContactIndex(index);
-                    setNameSelected(contact.name);
-                    openConversation(contact);
-                  }}
-                  className={`flex 
-                    overflow-y-auto
-                    items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
-                      selectedContactIndex === index
-                        ? "bg-gray-300"
-                        : "hover:bg-gray-100"
-                    } focus:outline-none`}
-                >
-                  <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                    {contact.avatar}
-                  </div>
-                  <div className="w-full pb-2">
-                    <div className="flex justify-between">
-                      {contact.verified ? (
-                        <span className="ml-2 font-semibold text-gray-600 flex items-center gap-1">
-                          {contact.name}
-                          <MdOutlineVerified size={"20px"} color="#4db7ff" />
-                        </span>
-                      ) : (
-                        <span className="block ml-2 font-semibold text-gray-600">
-                          {contact.name}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div>
-                <Spinner />
-              </div>
-            )}
-            <h3 className="ml-2 mt-5 font-bold">Propostas recebidas</h3>
-            {proposalContacts ? (
-              proposalContacts.map((contact, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setIsChatboxOpen(true);
-                    setSelectedContactId(contact.id);
-                    setSelectedContactIndex(index);
-                    setNameSelected(contact.name);
-                    openConversationProposal(contact);
-                  }}
-                  className={`overflow-y-auto flex items-center w-full px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer ${
-                    selectedContactIndex === index
-                      ? "bg-gray-300"
-                      : "hover:bg-gray-100"
-                  } focus:outline-none`}
-                >
-                  <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                    {contact.avatar}
-                  </div>
-                  <div className="w-full pb-2">
-                    <div className="flex justify-between">
-                      {contact.verified ? (
-                        <span className="ml-2 font-semibold text-gray-600 flex items-center gap-1">
-                          {contact.name}
-                          <MdOutlineVerified size={"20px"} color="#4db7ff" />
-                        </span>
-                      ) : (
-                        <span className="block ml-2 font-semibold text-gray-600">
-                          {contact.name}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div>
-                <Spinner />
-              </div>
-            )}
-          </ul>
+          <ContactList
+            key={null}
+            client={client as Client}
+            handleOpenMessagesProposal={HandleOpenMessagesProposal}
+            selectedContactIndex={Number(selectedContactIndex)}
+            handleOpenMessages={HandleOpenMessages}
+          />
         </div>
 
         {isChatboxOpen ? (
-          <div className="hidden lg:col-span-2 lg:block">
-            <div>
-              <div className="relative flex items-center p-3 border-b border-gray-300">
-                <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                  {nameSelected[0].toUpperCase()}
-                </div>
-                <span className="block ml-2 font-bold text-gray-600">
-                  {nameSelected}
-                </span>
-              </div>
-            </div>
-            <div
-              id="chatbox"
-              className="p-4 max-h-80 overflow-y-auto"
-              ref={chatboxRef}
-            >
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-2 ${
-                    message.sender === client?.id ? "text-right" : ""
-                  }`}
-                >
-                  <p
-                    className={`${
-                      message.sender === client?.id
-                        ? "bg-[#073321] text-white"
-                        : "bg-gray-200 text-gray-700"
-                    } rounded-lg py-2 px-4 inline-block`}
-                  >
-                    {message.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="p-4 border-t flex">
-              <input
-                id="user-input"
-                type="text"
-                placeholder="Type a message"
-                autoComplete="off"
-                className="w-full px-3 py-2 border rounded-l-md outline-none bg-[#0e0d0d] text-white"
-                value={userMessage}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setUserMessage(e.target.value)
-                }
-              />
-              <button
-                id="send-button"
-                className="bg-[#06613b] text-white px-4 py-2 rounded-r-md hover:bg-[#07271a] transition duration-300"
-                onClick={handleSendMessage}
-              >
-                Enviar
-              </button>
-            </div>
-          </div>
+          <MessageList chatboxRef={chatboxRef} messages={messages} client={(client) as Client}
+          handleSendMessage={handleSendMessage} nameSelected={nameSelected}
+          setUserMessage={setUserMessage} userMessage={userMessage} key={null}
+          />
         ) : (
           <div className=" w-full h-full flex justify-center items-center">
             <IoIosChatbubbles size={"60px"} />
