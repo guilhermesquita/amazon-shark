@@ -36,6 +36,16 @@ const ChatWeb: React.FC = () => {
     }
   }, [messages]);
 
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSendMessage();
+    } else if (event.key === "Enter" && event.shiftKey) {
+      event.preventDefault();
+      setUserMessage((prev) => prev + "\n");
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -85,34 +95,9 @@ const ChatWeb: React.FC = () => {
   }, [handleSendMessage]);
 
   return (
-    <div className="container mx-auto bg-white">
-      <div className="min-w-full border rounded lg:grid lg:grid-cols-3">
+    <div className="bg-white w-full max-w-3xl h-full max-h-[80vh] rounded-lg shadow-lg">
+      <div className="min-w-full h-full border rounded-lg lg:grid lg:grid-cols-3">
         <div className="border-r border-gray-300 lg:col-span-1">
-          <div className="mx-3 my-3">
-            <div className="relative text-gray-600">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  className="w-6 h-6 text-gray-300"
-                >
-                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </span>
-              <input
-                type="search"
-                className="block w-full py-2 pl-10 bg-gray-100 rounded outline-none"
-                name="search"
-                placeholder="Search"
-                required
-              />
-            </div>
-          </div>
-
           <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Conversas</h2>
           <ContactList
             key={null}
@@ -124,12 +109,18 @@ const ChatWeb: React.FC = () => {
         </div>
 
         {isChatboxOpen ? (
-          <MessageList chatboxRef={chatboxRef} messages={messages} client={(client) as Client}
-          handleSendMessage={handleSendMessage} nameSelected={nameSelected}
-          setUserMessage={setUserMessage} userMessage={userMessage} key={null}
+          <MessageList
+            chatboxRef={chatboxRef}
+            messages={messages}
+            client={client as Client}
+            handleSendMessage={handleSendMessage}
+            nameSelected={nameSelected}
+            setUserMessage={setUserMessage}
+            userMessage={userMessage}
+            key={null}
           />
         ) : (
-          <div className=" w-full h-full flex justify-center items-center">
+          <div className="w-full h-full flex justify-center items-center">
             <IoIosChatbubbles size={"60px"} />
             Inicie uma conversa
           </div>
