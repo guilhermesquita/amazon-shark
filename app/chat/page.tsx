@@ -22,12 +22,10 @@ export default function Index() {
   }, [router]);
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
+    <div className="flex-1 w-full flex flex-col gap-9 items-center">
       <Navbar />
-      <div className="w-full animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
-        <div>
-          <ChatWeb />
-        </div>
+      <div className="w-full flex flex-col items-center h-[40rem]">
+        <ChatWeb />
       </div>
     </div>
   );
