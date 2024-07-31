@@ -22,9 +22,9 @@ export default function Index() {
   }, [router]);
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
+    <div className="flex-1 w-full flex flex-col gap-9 items-center">
       <Navbar />
-      <div className="w-full flex flex-col items-center justify-center p-3 h-[30rem]">
+      <div className="w-full flex flex-col items-center h-[40rem]">
         <ChatWeb />
       </div>
     </div>

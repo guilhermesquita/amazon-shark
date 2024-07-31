@@ -8,7 +8,7 @@ import { Client } from "../types/client";
 import MessageList from "./MessageList/MessageList";
 
 const ChatWeb: React.FC = () => {
-  const { client } = useClient() as ClientContextType;
+  const { client, company } = useClient() as ClientContextType;
 
   const {
     messages,
@@ -36,15 +36,15 @@ const ChatWeb: React.FC = () => {
     }
   }, [messages]);
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      handleSendMessage();
-    } else if (event.key === "Enter" && event.shiftKey) {
-      event.preventDefault();
-      setUserMessage((prev) => prev + "\n");
-    }
-  };
+  // const handleKeyPress = (event: KeyboardEvent) => {
+  //   if (event.key === "Enter" && !event.shiftKey) {
+  //     event.preventDefault();
+  //     handleSendMessage();
+  //   } else if (event.key === "Enter" && event.shiftKey) {
+  //     event.preventDefault();
+  //     setUserMessage((prev) => prev + "\n");
+  //   }
+  // };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -95,11 +95,12 @@ const ChatWeb: React.FC = () => {
   }, [handleSendMessage]);
 
   return (
-    <div className="bg-white w-full max-w-3xl h-full max-h-[80vh] rounded-lg shadow-lg">
+    <div className="bg-white w-full max-w-6xl h-full max-h-[80vh] rounded-lg shadow-lg">
       <div className="min-w-full h-full border rounded-lg lg:grid lg:grid-cols-3">
         <div className="border-r border-gray-300 lg:col-span-1">
           <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Conversas</h2>
           <ContactList
+            selectedContactId={selectedContactId as string}
             key={null}
             client={client as Client}
             handleOpenMessagesProposal={HandleOpenMessagesProposal}

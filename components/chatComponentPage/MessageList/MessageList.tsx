@@ -19,16 +19,16 @@ const MessageList: React.FC<MessageProps> = ({
   chatboxRef,
   userMessage,
   setUserMessage,
-  handleSendMessage
+  handleSendMessage,
 }) => {
   return (
-    <div className="hidden lg:col-span-2 lg:block">
+    <div className="hidden lg:col-span-2 lg:block bg-[#fffefe]">
       <div>
-        <div className="relative flex items-center p-3 border-b border-gray-300">
-          <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+        <div className="relative bg-[#22B573] flex items-center p-3 border-b border-gray-300">
+          <div className="w-8 h-8 bg-black text-white rounded-lg flex items-center justify-center">
             {nameSelected[0].toUpperCase()}
           </div>
-          <span className="block ml-2 font-bold text-gray-600">
+          <span className="block ml-2 font-bold text-white">
             {nameSelected}
           </span>
         </div>
@@ -46,9 +46,9 @@ const MessageList: React.FC<MessageProps> = ({
             <p
               className={` max-w-72 break-words text-wrap ${
                 message.sender === client?.id
-                  ? "bg-[#073321] text-white"
+                  ? "bg-[#22B573] text-white"
                   : "bg-gray-200 text-gray-700"
-              } rounded-lg py-2 px-4 inline-block`}
+              } rounded-xl py-2 px-4 inline-block`}
             >
               {message.text}
             </p>
