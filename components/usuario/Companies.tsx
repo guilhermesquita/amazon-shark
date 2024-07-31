@@ -91,22 +91,21 @@ const CompaniesComponent = () => {
       ) : (
         <div>
           <Grid container spacing={3} alignItems="center">
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <Typography variant="h4" component="h1">
                 Minhas Empresas
               </Typography>
             </Grid>
-            <Grid item xs={6} textAlign="right">
+            <Grid item xs={12} md={6} textAlign={{ xs: "center", md: "right" }}>
               <Button
                 onClick={handleAddCompanyClick}
                 variant="contained"
-                
                 sx={{
                   backgroundColor: "transparent",
                   color: "black",
                   "&:hover": {
                     backgroundColor: "#439D5D",
-                    color: "white"
+                    color: "white",
                   },
                 }}
               >
@@ -115,17 +114,18 @@ const CompaniesComponent = () => {
               </Button>
             </Grid>
             {companies.map((company) => (
-              <Grid item xs={12} key={company.company_id}>
+              <Grid item xs={12} sm={6} md={4} key={company.company_id}>
                 <Card
                   sx={{
                     display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
                     background: "var(--btn-background)",
                     borderRadius: "10px",
                   }}
                 >
                   <CardMedia
                     component="img"
-                    sx={{ width: 150 }}
+                    sx={{ width: { xs: "100%", sm: 150 } }}
                     image={
                       imageUrls[company.company_id] ||
                       "https://via.placeholder.com/150x150.png"
@@ -144,13 +144,8 @@ const CompaniesComponent = () => {
                       {company.description}
                     </Typography>
                     <div
-                      style={{
-                        marginTop: "10px",
-                        display: "flex",
-                        gap: "10px",
-                      }}
+                      className="mt-2 flex gap-2"
                     >
-                      
                       <Button
                         onClick={() => handleEditCompanyClick(company)}
                         variant="outlined"
@@ -158,8 +153,7 @@ const CompaniesComponent = () => {
                       >
                         <MdEdit size={20} />
                       </Button>
-
-                      <Modal company_id={company.company_id}/>
+                      <Modal company_id={company.company_id} />
                     </div>
                   </CardContent>
                 </Card>
