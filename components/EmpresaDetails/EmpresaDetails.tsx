@@ -45,7 +45,6 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
             >
               {company.name}
             </h2>
-            <p className="text-white-700 mb-4">{company.description}</p>
             <div className="flex flex-col md:flex-row">
               <p className="text-white-900 font-semibold mb-2 md:mb-0 md:mr-4">
                 CNPJ: {company.cnpj}

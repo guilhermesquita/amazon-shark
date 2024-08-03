@@ -34,7 +34,7 @@ const ContactList: React.FC<ContactProps> = ({
                 className={`flex 
                       overflow-y-auto rounded-xl h-20 truncate
                       items-center w-full pl-2 text-sm transition duration-150 ease-in-out cursor-pointer ${
-                        selectedContactId === contact.id 
+                        selectedContactId === contact.id && selectedContactIndex === index 
                           ? "bg-[#d3ffe4] "
                           : "hover:bg-gray-100"
                       } focus:outline-none`}
@@ -78,7 +78,7 @@ const ContactList: React.FC<ContactProps> = ({
               className={`flex 
                 overflow-y-auto rounded-xl h-20 truncate
                 items-center w-full pl-2 text-sm transition duration-150 ease-in-out cursor-pointer ${
-                  selectedContactId === contact.id 
+                  selectedContactId === contact.id && selectedContactIndex === index 
                     ? "bg-[#d3ffe4] "
                     : "hover:bg-gray-100"
                 } focus:outline-none`}
