@@ -2,7 +2,6 @@ import { ContactTypes, useConversations } from "@/hooks/useMessages";
 import { Client } from "../../types/client";
 import Spinner from "../../Spinner/Spinner";
 import { MdOutlineVerified } from "react-icons/md";
-import { useEffect } from "react";
 
 interface ContactProps {
   client: Client;
