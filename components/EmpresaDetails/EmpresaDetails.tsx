@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getPhotoByCompanie } from "../actions";
+import { getFinanceiroByCompanie, getPhotoByCompanie, getPitchByCompanie } from "../actions";
 import Chat from "../chat/Chat";
 import { ClientContextType, useClient } from "@/app/context/clientContext";
+import { UserContextType, useUser } from "@/app/context/userContext";
 
 type Props = {
   onClose: () => void;
@@ -9,18 +10,39 @@ type Props = {
 
 const CompanyDetails: React.FC<Props> = ({ onClose }) => {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [pitchUrl, setPitchUrl] = useState<string | null>(null);
+  const [financialUrl, setFinancialUrl] = useState<string | null>(null);
   const { company } = useClient() as ClientContextType;
+
+  const {user} = useUser() as UserContextType
 
   const { client } = useClient() as ClientContextType;
 
   useEffect(() => {
-    console.log(company)
     const fetchPhotoUrl = async () => {
       const url = await getPhotoByCompanie(company);
       setPhotoUrl(url);
     };
 
     fetchPhotoUrl();
+  }, [company]);
+
+  useEffect(() => {
+    const fetchPitchUrl = async () => {
+      const url = await getPitchByCompanie(company);
+      setPitchUrl(url);
+    };
+
+    fetchPitchUrl();
+  }, [company]);
+
+  useEffect(() => {
+    const fetchFinancialUrl = async () => {
+      const url = await getFinanceiroByCompanie(company);
+      setFinancialUrl(url);
+    };
+
+    fetchFinancialUrl();
   }, [company]);
 
   return (
@@ -83,8 +105,8 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-2">Pitch</h3>
             <a
-              href={company.pitch}
-              target="_blank"
+              href={user ? pitchUrl as string : '/login'}
+              target={user ? "_blank" : '_self'}
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline"
             >
@@ -98,7 +120,7 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
               Informações Financeiras
             </h3>
             <a
-              href={company.financeiro}
+              href={financialUrl as string}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline"
