@@ -31,12 +31,12 @@ export default function CompanyCard({ company, imageUrl, onViewDetails }: Compan
         <h3 className="text-2xl font-bold">{company.name}</h3>
         {profile?.verification ? (
           <div className="mb-4 flex items-center gap-1">
-            de <p className="text-[#818080]">{profile?.full_name }</p>
+            de <p className="text-[#818080] truncate">{profile.full_name ? profile.full_name.split("@")[0] : "" }</p>
             <MdOutlineVerified color="#4db7ff"/>
           </div>
         ) : 
           <div className="mb-4 flex items-center gap-1">
-            de <p className="text-[#818080]">{profile?.full_name }</p>
+            de <p className="text-[#818080]">{profile?.full_name ? profile.full_name.split("@")[0] : "" }</p>
           </div>
         }
         <div className="mb-4">
