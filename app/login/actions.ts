@@ -42,7 +42,7 @@ export async function signUp(formData: FormData) {
         cpf: cpf,
         phone: phone
       },
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${origin}/login`,
     },
   });
 
