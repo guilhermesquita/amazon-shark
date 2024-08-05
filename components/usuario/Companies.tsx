@@ -14,7 +14,6 @@ import Grid from "@mui/material/Grid";
 import CardMedia from "@mui/material/CardMedia";
 import { Companies } from "../types/companies";
 import { MdEdit } from "react-icons/md";
-import { FaTrash } from "react-icons/fa";
 import { CiSquarePlus } from "react-icons/ci";
 import Modal from "@/app/modal/Modal";
 
@@ -115,49 +114,59 @@ const CompaniesComponent = () => {
             </Grid>
             {companies.map((company) => (
               <Grid item xs={12} sm={6} md={4} key={company.company_id}>
-                <Card
-                  sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    background: "var(--btn-background)",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    sx={{ width: { xs: "100%", sm: 150 } }}
-                    image={
-                      imageUrls[company.company_id] ||
-                      "https://via.placeholder.com/150x150.png"
-                    }
-                    alt="Company Image"
-                  />
-                  <CardContent sx={{ flex: "1" }}>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      className="text-black"
+              <Card
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  background: "var(--btn-background)",
+                  borderRadius: "10px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                  width: "350px",
+                  transition: "transform 0.2s",
+                  '&:hover': {
+                    transform: "scale(1.02)",
+                  },
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  sx={{ width: { xs: "100%", sm: 150 }, height: "auto" }}
+                  image={
+                    imageUrls[company.company_id] || "https://via.placeholder.com/150x150.png"
+                  }
+                  alt="Company Image"
+                />
+                <CardContent sx={{ flex: "1", padding: 2 }}>
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className="text-black"
+                    sx={{ fontWeight: 'bold' }}
+                  >
+                    {company.name}
+                  </Typography>
+                  <div className="mt-2 flex gap-2">
+                    <Button
+                      onClick={() => handleEditCompanyClick(company)}
+                      variant="outlined"
+                      className="text-white hover:bg-red-2000"
+                      sx={{
+                        borderColor: 'var(--btn-background)',
+                        color: 'var(--btn-background)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                          borderColor: 'var(--btn-background)',
+                        }
+                      }}
                     >
-                      {company.name}
-                    </Typography>
-                    <Typography variant="body2" className="text-black">
-                      {company.description}
-                    </Typography>
-                    <div
-                      className="mt-2 flex gap-2"
-                    >
-                      <Button
-                        onClick={() => handleEditCompanyClick(company)}
-                        variant="outlined"
-                        className="text-white hover:bg-red-2000"
-                      >
-                        <MdEdit size={20} />
-                      </Button>
-                      <Modal company_id={company.company_id} />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Grid>
+                      <MdEdit size={20} />
+                    </Button>
+                    <Modal company_id={company.company_id} />
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>            
             ))}
           </Grid>
         </div>
