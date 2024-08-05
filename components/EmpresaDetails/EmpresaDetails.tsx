@@ -86,7 +86,7 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
         </div>
         <div className="mt-6">
           <h3 className="text-2xl font-semibold mb-2">Apresentação</h3>
-          <p className="text-white-700">{company.presentation}</p>
+          <p className="text-white-700">{company.description}</p>
         </div>
         {company.social_links && (
           <div className="mt-6">
@@ -131,7 +131,7 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
         )}
         <div className="mt-6">
           <h3 className="text-2xl font-semibold mb-2">Objetivo</h3>
-          <p className="text-white-700">{company.description}</p>
+          <p className="text-white-700">{company.presentation}</p>
         </div>
       </div>
     </div>
