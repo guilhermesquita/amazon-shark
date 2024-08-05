@@ -48,7 +48,7 @@ export const useConversations = (client: Client | null) => {
     };
   }, []);
 
-  
+
 
   useEffect(() => {
     async function fetchConversations() {

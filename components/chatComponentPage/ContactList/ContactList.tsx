@@ -93,9 +93,9 @@ const ContactList: React.FC<ContactProps> = ({
                   <MdOutlineVerified size={"20px"} color="#4db7ff" className="flex-shrink-0"/>
                 </span>
                   ) : (
-                    <span className="block ml-2 font-semibold text-gray-600">
-                      {contact.name}
-                    </span>
+                    <span className="font-semibold text-gray-600 flex ml-2">
+                        {contact.name}
+                      </span>
                   )}
                 </div>
               </div>

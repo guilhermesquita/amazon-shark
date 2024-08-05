@@ -8,7 +8,7 @@ import { Client } from "../types/client";
 import MessageList from "./MessageList/MessageList";
 
 const ChatWeb: React.FC = () => {
-  const { client, company } = useClient() as ClientContextType;
+  const { client } = useClient() as ClientContextType;
 
   const {
     messages,
@@ -35,16 +35,6 @@ const ChatWeb: React.FC = () => {
       chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
     }
   }, [messages]);
-
-  // const handleKeyPress = (event: KeyboardEvent) => {
-  //   if (event.key === "Enter" && !event.shiftKey) {
-  //     event.preventDefault();
-  //     handleSendMessage();
-  //   } else if (event.key === "Enter" && event.shiftKey) {
-  //     event.preventDefault();
-  //     setUserMessage((prev) => prev + "\n");
-  //   }
-  // };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
