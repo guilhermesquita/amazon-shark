@@ -124,9 +124,6 @@ const CompaniesComponent = () => {
                   overflow: "hidden",
                   width: "350px",
                   transition: "transform 0.2s",
-                  '&:hover': {
-                    transform: "scale(1.02)",
-                  },
                 }}
               >
                 <CardMedia
