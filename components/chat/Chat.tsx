@@ -117,7 +117,22 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
     }
   }, [messages, pendingMessages]);
 
+  const checkUser = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push("/login");
+    }
+  }, [supabase, router]);
+
+  const handleSendMessage = useCallback(() => {
+    if (userMessage.trim()) {
+      addUserMessage(userMessage);
+      setUserMessage("");
+    }
+  }, [userMessage]);
+
   const toggleChatbox = useCallback(async () => {
+    await checkUser()
     setIsChatboxOpen((prev) => !prev);
     if (!isChatboxOpen) {
       setIsLoading(true);
@@ -139,20 +154,6 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
       setIsLoading(false);
     }
   }, [isChatboxOpen, fetchContactData, fetchMessages, client?.id, user_id, company_id]);
-
-  const checkUser = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      router.push("/login");
-    }
-  }, [supabase, router]);
-
-  const handleSendMessage = useCallback(() => {
-    if (userMessage.trim()) {
-      addUserMessage(userMessage);
-      setUserMessage("");
-    }
-  }, [userMessage]);
 
   const addUserMessage = useCallback(async (message: string) => {
     if (client?.id) {
