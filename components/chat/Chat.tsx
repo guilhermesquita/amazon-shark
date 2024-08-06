@@ -4,6 +4,7 @@ import React, {
   ChangeEvent,
   useRef,
   useCallback,
+  useMemo,
 } from "react";
 import {
   createConversation,
@@ -16,6 +17,7 @@ import {
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import Spinner from "../Spinner/Spinner";
 
 interface Message {
   text: string;
@@ -28,51 +30,43 @@ type Props = {
 };
 
 const Chat: React.FC<Props> = ({ user_id, company_id }) => {
-  const [isChatboxOpen, setIsChatboxOpen] = useState<boolean>(false);
-  const [userMessage, setUserMessage] = useState<string>("");
+  const [isChatboxOpen, setIsChatboxOpen] = useState(false);
+  const [userMessage, setUserMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [pendingMessages, setPendingMessages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { client } = useClient() as ClientContextType;
   const chatboxRef = useRef<HTMLDivElement>(null);
   const [selectedContact, setSelectedContact] = useState<string[]>([]);
+  const router = useRouter();
 
-  const router = useRouter()
+  const supabase = useMemo(() => createClient(), []);
 
-  useEffect(() => {
-    async function fetchMessages() {
+  const fetchContactData = useCallback(async () => {
+    const contact = await getClientById(user_id);
+    const contactArray = contact.data as any[];
+    const name = contactArray[0].full_name;
 
-      const contact = await getClientById(user_id)
-      const contactArray = contact.data as any[]
-      const name = contactArray[0].full_name
-      
-      const company = await getCompanyById(company_id)
-      const companyArray = company.data as any[]
-      const nameCompany = companyArray[0].name
+    const company = await getCompanyById(company_id);
+    const companyArray = company.data as any[];
+    const nameCompany = companyArray[0].name;
 
-      setSelectedContact([name, nameCompany])
+    setSelectedContact([name, nameCompany]);
+  }, [user_id, company_id]);
 
-      const conversation = await getConversationsExists(
-        client?.id as string,
-        user_id,
-        company_id
-      );
-      if (conversation.data?.length) {
-        const idConversation = conversation.data[0].id;
-        const fetchedMessages = await getAllMessages(idConversation);
-        if (fetchedMessages.data) {
-          const formattedMessages = fetchedMessages.data.map((item: any) => ({
-            text: item.content,
-            sender: item.sender_id,
-          }));
-          setMessages(formattedMessages);
-        }
-      }
+  const fetchMessages = useCallback(async (conversationId: number) => {
+    const fetchedMessages = await getAllMessages(conversationId);
+    if (fetchedMessages.data) {
+      const formattedMessages = fetchedMessages.data.map((item: any) => ({
+        text: item.content,
+        sender: item.sender_id,
+      }));
+      setMessages(formattedMessages);
     }
-    fetchMessages();
   }, []);
 
   useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
+    const messageChannel = supabase
       .channel("messages-component")
       .on(
         "postgres_changes",
@@ -87,18 +81,14 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
             sender: payload.new.sender_id,
           };
           setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setPendingMessages((prevPending) =>
+            prevPending.filter((msg) => msg !== payload.new.content)
+          );
         }
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
+    const conversationChannel = supabase
       .channel("conversations-component")
       .on(
         "postgres_changes",
@@ -108,82 +98,84 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
           table: "conversations",
         },
         (payload: any) => {
-          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-            // fetchMessages();
-            console.log(payload)
+          if (payload.eventType === "INSERT" || payload.eventType === "UPDATE") {
+            console.log(payload);
           }
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(messageChannel);
+      supabase.removeChannel(conversationChannel);
     };
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     if (chatboxRef.current) {
       chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, pendingMessages]);
 
-  const toggleChatbox = async () => {
-    const clientId = client?.id as string;
-    checkUser()
-    const conversationExists = await ensureConversationExists(clientId, user_id);
-    if (conversationExists) {
-      setIsChatboxOpen(!isChatboxOpen);
-      setTimeout(() => {
-        if (chatboxRef.current) {
-          chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
-        }
-      }, 0);
-    } else {
-      alert('Já existe uma conversa ativa.');
+  const toggleChatbox = useCallback(async () => {
+    setIsChatboxOpen((prev) => !prev);
+    if (!isChatboxOpen) {
+      setIsLoading(true);
+      await fetchContactData();
+      const clientId = client?.id as string;
+      const conversation = await getConversationsExists(clientId, user_id, company_id);
+
+      if (conversation.data?.length) {
+        const idConversation = conversation.data[0].id;
+        await fetchMessages(idConversation);
+      } else {
+        await createConversation({
+          profile1_id: clientId,
+          profile2_id: user_id,
+          company_id: company_id,
+        });
+      }
+
+      setIsLoading(false);
     }
-  };
+  }, [isChatboxOpen, fetchContactData, fetchMessages, client?.id, user_id, company_id]);
 
-  const checkUser = async () => {
-    const supabase = createClient();
+  const checkUser = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      router.push('/login');
+      router.push("/login");
     }
-  };
-
-  const ensureConversationExists = async (clientId: string, userId: string): Promise<boolean> => {
-    const conversation = await getConversationsExists(clientId, userId, company_id);
-    if (!conversation.data?.length) {
-      await createConversation({ profile1_id: clientId, profile2_id: userId, company_id: company_id });
-      return true;
-    }
-    return false;
-  };
+  }, [supabase, router]);
 
   const handleSendMessage = useCallback(() => {
-    if (userMessage.trim() !== "") {
+    if (userMessage.trim()) {
       addUserMessage(userMessage);
       setUserMessage("");
     }
   }, [userMessage]);
 
-  const addUserMessage = async (message: string) => {
+  const addUserMessage = useCallback(async (message: string) => {
     if (client?.id) {
+      setPendingMessages((prevPending) => [...prevPending, message]);
+
       const conversation = await getConversationsExists(
-        client?.id as string,
+        client.id,
         user_id,
         company_id
       );
+
       if (conversation.data?.length) {
         const idConversation = conversation.data[0].id;
         await sendMessage({
           content: message,
           conversation_id: idConversation,
-          sender_id: client.id ?? "0",
+          sender_id: client.id,
         });
+
+        await fetchMessages(idConversation);
       }
     }
-  };
+  }, [client?.id, user_id, company_id, fetchMessages]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -196,6 +188,7 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
       window.removeEventListener("keyup", handleKeyPress);
     };
   }, [handleSendMessage]);
+
   return (
     <div>
       <div className="mt-5">
@@ -223,13 +216,14 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
       </div>
       <div
         id="chat-container"
-        className={`fixed bottom-0 right-0 w-96 ${
-          isChatboxOpen ? "" : "hidden"
-        }`}
+        className={`fixed bottom-0 right-0 w-96 ${isChatboxOpen ? "" : "hidden"}`}
       >
         <div className="bg-[#141414] absolute bottom-16 shadow-md rounded-lg max-w-lg w-full">
           <div className="p-4 border-b bg-[#06613b] text-white rounded-t-lg flex justify-between items-center">
-            <p className="text-lg font-semibold">{`${selectedContact[0]} da ${selectedContact[1]}`}</p>
+            <p className="text-lg font-semibold">{
+              selectedContact[0] ? 
+               `${selectedContact[0]} da ${selectedContact[1]}`:
+              <div>carregando...</div>}</p>
             <button
               id="close-chat"
               className="text-gray-300 hover:text-gray-400 focus:outline-none focus:text-gray-400"
@@ -251,45 +245,44 @@ const Chat: React.FC<Props> = ({ user_id, company_id }) => {
               </svg>
             </button>
           </div>
-          <div
-            id="chatbox"
-            className="p-4 h-80 overflow-y-auto"
-            ref={chatboxRef}
-          >
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`mb-2 ${
-                  message.sender === client?.id ? "text-right" : ""
-                }`}
-              >
-                <p
-                  className={`${
-                    message.sender === client?.id
-                      ? "bg-[#073321] text-white"
-                      : "bg-gray-200 text-gray-700"
-                  } rounded-lg py-2 px-4 inline-block`}
-                >
-                  {message.text}
-                </p>
+          <div id="chatbox" className="p-4 h-80 overflow-y-auto" ref={chatboxRef}>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-full">
+                <p className="text-white"><Spinner/></p>
               </div>
-            ))}
+            ) : (
+              <>
+                {messages.map((message, index) => (
+                  <div key={index} className={`mb-2 ${message.sender === client?.id ? "text-right" : ""}`}>
+                    <p className={`${message.sender === client?.id ? "bg-[#073321] text-white" : "bg-gray-200 text-gray-700"} rounded-lg py-2 px-4 inline-block`}>
+                      {message.text}
+                    </p>
+                  </div>
+                ))}
+                {pendingMessages.map((message, index) => (
+                  <div key={`pending-${index}`} className="mb-2 text-right">
+                    <p className="bg-[#073321] text-white rounded-lg py-2 px-4 inline-block">
+                      {message}
+                    </p>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
           <div className="p-4 border-t flex">
             <input
               id="user-input"
               type="text"
-              placeholder="Type a message"
-              autoComplete="off"
-              className="w-full px-3 py-2 border rounded-l-md outline-none bg-[#0e0d0d] text-white"
+              placeholder="Type a message..."
+              disabled={isLoading}
               value={userMessage}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setUserMessage(e.target.value)
-              }
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setUserMessage(e.target.value)}
+              className="w-full border rounded-l-lg py-2 px-4 focus:outline-none focus:ring focus:border-blue-300"
             />
             <button
               id="send-button"
-              className="bg-[#06613b] text-white px-4 py-2 rounded-r-md hover:bg-[#07271a] transition duration-300"
+              disabled={isLoading}
+              className="bg-[#073321] text-white py-2 px-4 rounded-r-lg hover:bg-[#07271a] transition duration-300"
               onClick={handleSendMessage}
             >
               Enviar
