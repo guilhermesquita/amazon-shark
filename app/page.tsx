@@ -6,6 +6,7 @@ import HomeContent from "@/components/HomeContent";
 import { getBackGroundPhoto } from "../components/actions";
 import Spinner from "@/components/Spinner/Spinner";
 import { ClientContextType, useClient } from "./context/clientContext";
+import ContactFloatButton from "@/components/contact/ContactFloatButton";
 
 export default function Index() {
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
@@ -43,6 +44,8 @@ export default function Index() {
           Navegue
         </a>
       </main>
+
+      <ContactFloatButton/>
 
       <Footer />
     </div>
