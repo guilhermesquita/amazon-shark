@@ -1,17 +1,21 @@
 "use client";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MdOutlineVerified } from "react-icons/md";
-import { getClientById, getUser, signOut } from "../actions";
+import { getClientById, getConversationsByProfile2, getUnreadMessages, getUser, signOut } from "../actions";
 import DropdownMenu from "./DropdownMenu";
 import Spinner from "../Spinner/Spinner";
 import { useUser, UserContextType } from "@/app/context/userContext";
 import { useClient, ClientContextType } from "@/app/context/clientContext";
 import { Client } from "../types/client";
+import { UnreadMessageContextType, useUnreadMessage } from "@/app/context/unreadMessageContext";
+import { Conversations } from "../types/conversations";
+import { Messages } from "../types/messages";
 
 export default function AuthButton() {
   const { user, setUser } = useUser() as UserContextType;
   const { client, setClient } = useClient() as ClientContextType;
+  const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
   const [loading, setLoading] = useState(!user);
 
   useEffect(() => {
@@ -20,8 +24,8 @@ export default function AuthButton() {
       if (fetchedUser) {
         const fetchedClient = await getClientById(fetchedUser.id);
         setUser(fetchedUser);
-        const teste = fetchedClient.data as Client[];
-        setClient(teste[0]);
+        const clientArr = fetchedClient.data as Client[];
+        setClient(clientArr[0]);
       }
       setLoading(false);
     }
@@ -32,6 +36,24 @@ export default function AuthButton() {
       setLoading(false);
     }
   }, [user, setUser, setClient]);
+
+  useEffect(()=>{
+    async function fetchUnreadMessage(){
+      const conversationByProfile = await getConversationsByProfile2(client?.id as string)
+      const conversation = conversationByProfile.data as Conversations[];
+      let unread: number = 0;
+      for(const i in conversation){
+        let senderId: string
+        conversation[i].profile1_id == client?.id ? senderId = conversation[i].profile2_id : senderId = conversation[i].profile1_id
+        const messages = await getUnreadMessages(conversation[i].id, senderId) 
+        const message = messages.data as Messages[];
+        unread += message.length;
+        setUnreadMessage(unread)
+      }
+    }
+
+    fetchUnreadMessage()
+  })
 
   if (loading) {
     return <Spinner />;

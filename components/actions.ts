@@ -415,6 +415,16 @@ export async function getAllMessages(conversationId: number){
   return supabase.from("messages").select("*").eq("conversation_id", conversationId)
 }
 
+export async function getConversationsByProfile2(profileId: string){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").eq("profile2_id", profileId)
+}
+
+export async function getUnreadMessages(idConversation: number, senderId: string) {
+  const supabase = createClient();
+  return supabase.from("messages").select("*").eq("conversation_id", idConversation).eq("read", false).eq("sender_id",senderId)
+}
+
 export async function sendMessage(messageData: MessagesDTO) {
   const supabase = createClient();
   

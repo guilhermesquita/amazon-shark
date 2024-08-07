@@ -1,8 +1,9 @@
-'use client'
+// useConversations.ts
 import { useEffect, useState } from 'react';
 import { Client } from '@/components/types/client';
 import { getAllMessages, getClientById, getCompanyById, getConversationsExists, getConversationsReceivedAll, getConversationsSendedAll, getProfileById, sendMessage } from '@/components/actions';
 import { createClient } from '@/utils/supabase/client';
+import { UnreadMessageContextType, useUnreadMessage } from '@/app/context/unreadMessageContext';
 
 export type ContactTypes = {
   id: string;
@@ -21,6 +22,8 @@ export const useConversations = (client: Client | null) => {
   const [contacts, setContacts] = useState<ContactTypes[] | null>(null);
   const [proposalContacts, setProposalContacts] = useState<ContactTypes[] | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
 
   useEffect(() => {
     const supabase = createClient();
@@ -46,9 +49,11 @@ export const useConversations = (client: Client | null) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [setUnreadMessage]);
 
+  useEffect(() => {
 
+  })
 
   useEffect(() => {
     async function fetchConversations() {
@@ -109,7 +114,6 @@ export const useConversations = (client: Client | null) => {
     const company = await getCompanyById(Number(contact.companyId));
     const arrCompany = company.data as any[];
     const idCompany = arrCompany[0].company_id;
-
     const conversation = await getConversationsExists(
       client?.id as string,
       contact.id,
@@ -129,9 +133,12 @@ export const useConversations = (client: Client | null) => {
   };
 
   const openConversationProposal = async (contact: ContactTypes) => {
+
+    setUnreadMessage(2)
+
     const conversation = await getConversationsExists(
       contact.id,
-      client?.id as string,
+      client?.id as string
     );
     if (conversation.data?.length) {
       const idConversation = conversation.data[0].id;
@@ -183,7 +190,6 @@ export const useConversations = (client: Client | null) => {
     }
   };
 
-
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -202,32 +208,6 @@ export const useConversations = (client: Client | null) => {
           ) {
             console.log(payload);
           }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  useEffect(() => {
-    const supabase = createClient();
-    const channel = supabase
-      .channel("messages-component")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "messages",
-        },
-        (payload: any) => {
-          const newMessage = {
-            text: payload.new.content,
-            sender: payload.new.sender_id,
-          };
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
         }
       )
       .subscribe();
