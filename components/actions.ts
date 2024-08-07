@@ -415,9 +415,9 @@ export async function getAllMessages(conversationId: number){
   return supabase.from("messages").select("*").eq("conversation_id", conversationId)
 }
 
-export async function getConversationsByProfile2(profileId: string){
+export async function getConversationsByProfile(profileId: string){
   const supabase = createClient();
-  return supabase.from("conversations").select("*").eq("profile2_id", profileId)
+  return supabase.from("conversations").select("*").or(`profile2_id.eq.${profileId},profile1_id.eq.${profileId}`);
 }
 
 export async function getUnreadMessages(idConversation: number, senderId: string) {

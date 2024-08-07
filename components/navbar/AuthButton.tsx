@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MdOutlineVerified } from "react-icons/md";
-import { getClientById, getConversationsByProfile2, getUnreadMessages, getUser, signOut } from "../actions";
+import { getClientById, getConversationsByProfile, getUnreadMessages, getUser, signOut } from "../actions";
 import DropdownMenu from "./DropdownMenu";
 import Spinner from "../Spinner/Spinner";
 import { useUser, UserContextType } from "@/app/context/userContext";
@@ -39,7 +39,7 @@ export default function AuthButton() {
 
   useEffect(()=>{
     async function fetchUnreadMessage(){
-      const conversationByProfile = await getConversationsByProfile2(client?.id as string)
+      const conversationByProfile = await getConversationsByProfile(client?.id as string)
       const conversation = conversationByProfile.data as Conversations[];
       let unread: number = 0;
       for(const i in conversation){
