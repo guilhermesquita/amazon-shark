@@ -223,7 +223,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
           <h6>Pitch da empresa:</h6>
           <input
             type="file"
-            accept=".pdf"
+            // accept=".pdf"
             onChange={(e) => handleFileChange(e, setPitchFile)}
             className="p-2 border rounded text-gray-500"
           />
@@ -238,7 +238,7 @@ export default function AddEmpresa({ existingCompany }: AddEmpresaProps) {
           <h6>Financeiro da empresa:</h6>
           <input
             type="file"
-            accept=".pdf"
+            // accept=".pdf"
             onChange={(e) => handleFileChange(e, setFinanceiroFile)}
             className="p-2 border rounded text-gray-500"
           />
