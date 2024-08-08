@@ -18,7 +18,7 @@ const ContactList: React.FC<ContactProps> = ({
   handleOpenMessagesProposal,
   selectedContactId,
 }) => {
-  const { contacts, proposalContacts, unreadMessagesCounted } = useConversations(client);
+  const { contacts, proposalContacts } = useConversations(client);
 
   return (
     <ul className="min-h-3/5 flex flex-col gap-5 p-3">
@@ -29,7 +29,7 @@ const ContactList: React.FC<ContactProps> = ({
             contacts.map((contact, index) => (
               <button
                 key={index}
-                onClick={() => handleOpenMessages(contact, index)}
+                onClick={() => {handleOpenMessages(contact, index), contact.unreadMessage = 0}}
                 className={`flex 
                       overflow-y-auto rounded-xl h-20 truncate
                       items-center w-full pl-2 text-sm transition duration-150 ease-in-out cursor-pointer ${
@@ -47,10 +47,11 @@ const ContactList: React.FC<ContactProps> = ({
                       <span className="font-semibold text-gray-600 flex gap-1 ml-2">
                         {contact.name}
                         <MdOutlineVerified size={"20px"} color="#4db7ff" className="flex-shrink-0"/>
+                        {contact.unreadMessage > 0 ? '- ' + contact.unreadMessage : null}
                       </span>
                     ) : (
                       <span className="font-semibold text-gray-600 flex ml-2">
-                        {contact.name} - {contact.unreadMessage}
+                        {contact.name} {contact.unreadMessage > 0 ? '- ' + contact.unreadMessage : null}
                       </span>
                     )}
                   </div>
@@ -73,6 +74,7 @@ const ContactList: React.FC<ContactProps> = ({
               key={index}
               onClick={() => {
                 handleOpenMessagesProposal(contact, index);
+                contact.unreadMessage = 0
               }}
               className={`flex 
                 overflow-y-auto rounded-xl h-20 truncate
@@ -91,10 +93,11 @@ const ContactList: React.FC<ContactProps> = ({
                 <span className="font-semibold text-gray-600 flex gap-1 ml-2">
                   {contact.name}
                   <MdOutlineVerified size={"20px"} color="#4db7ff" className="flex-shrink-0"/>
+                  {contact.unreadMessage > 0 ? '- ' + contact.unreadMessage : null}
                 </span>
                   ) : (
                     <span className="font-semibold text-gray-600 flex ml-2">
-                        {contact.name}
+                        {contact.name} {contact.unreadMessage > 0 ? '- ' + contact.unreadMessage : null}
                       </span>
                   )}
                 </div>

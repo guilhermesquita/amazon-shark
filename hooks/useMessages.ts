@@ -11,6 +11,7 @@ export type ContactTypes = {
   avatar: string;
   verified: boolean;
   unreadMessage: number
+  idConversation: number
 };
 
 type Message = {
@@ -42,7 +43,7 @@ export const useConversations = (client: Client | null) => {
             text: payload.new.content,
             sender: payload.new.sender_id,
           };
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          // setMessages((prevMessages) => [...prevMessages, newMessage]);
         }
       )
       .subscribe();
@@ -89,6 +90,7 @@ export const useConversations = (client: Client | null) => {
                 avatar: profile[0].full_name[0].toUpperCase(),
                 companyId: arrCompany[0].company_id,
                 verified: profile[0].verification,
+                idConversation: conversation.id,
                 unreadMessage: unreadMessagesCount
               };
             })
@@ -129,6 +131,7 @@ export const useConversations = (client: Client | null) => {
                 id: profile[0].id,
                 avatar: profile[0].full_name[0].toUpperCase(),
                 verified: profile[0].verification,
+                idConversation: conversation.id,
                 unreadMessage: unreadMessagesCount
               };
             })
