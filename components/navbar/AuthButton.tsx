@@ -45,7 +45,7 @@ export default function AuthButton() {
       for(const i in conversation){
         let senderId: string
         conversation[i].profile1_id == client?.id ? senderId = conversation[i].profile2_id : senderId = conversation[i].profile1_id
-        const messages = await getUnreadMessages(conversation[i].id, senderId) 
+        const messages = await getUnreadMessages(conversation[i].id as number, senderId) 
         const message = messages.data as Messages[];
         unread += message.length;
         setUnreadMessage(unread)
