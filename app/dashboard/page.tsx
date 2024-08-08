@@ -53,7 +53,7 @@ export default function Dashboard() {
     <div className="flex-1 w-full flex flex-col gap-20 items-center min-h-screen">
       <Navbar />
       <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-6xl w-full px-3">
-        <main className="flex-1 flex flex-row gap-6">
+        <main className="flex-1 flex flex-col md:flex-row gap-6">
           <Sidebar
             selectedSection={selectedSection}
             setSelectedSection={setSelectedSection}
