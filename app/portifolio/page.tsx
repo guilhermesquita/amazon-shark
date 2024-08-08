@@ -2,9 +2,16 @@
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
 import PortifolioContent from "@/components/PortifolioContent";
-import { ClientContextType, useClient } from "../context/clientContext";
+import { useEffect } from "react";
+import { UnreadMessageContextType, useUnreadMessage } from "../context/unreadMessageContext";
 
 export default function Index() {
+
+  const {unreadMessage} = useUnreadMessage() as UnreadMessageContextType
+
+  useEffect(()=>{
+    console.log(unreadMessage)
+  })
 
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center min-h-screen">

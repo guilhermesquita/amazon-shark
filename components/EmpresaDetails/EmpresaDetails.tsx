@@ -63,7 +63,6 @@ const CompanyDetails: React.FC<Props> = ({ onClose }) => {
           <div className="flex-1">
             <h2
               className="text-3xl font-bold mb-2"
-              onClick={() => alert(company.user_id)}
             >
               {company.name}
             </h2>

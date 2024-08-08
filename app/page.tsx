@@ -5,7 +5,6 @@ import Footer from "@/components/footer/Footer";
 import HomeContent from "@/components/HomeContent";
 import { getBackGroundPhoto } from "../components/actions";
 import Spinner from "@/components/Spinner/Spinner";
-import { ClientContextType, useClient } from "./context/clientContext";
 
 export default function Index() {
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
