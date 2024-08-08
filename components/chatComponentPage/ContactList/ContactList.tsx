@@ -18,7 +18,7 @@ const ContactList: React.FC<ContactProps> = ({
   handleOpenMessagesProposal,
   selectedContactId,
 }) => {
-  const { contacts, proposalContacts } = useConversations(client);
+  const { contacts, proposalContacts, unreadMessagesCounted } = useConversations(client);
 
   return (
     <ul className="min-h-3/5 flex flex-col gap-5 p-3">
@@ -50,7 +50,7 @@ const ContactList: React.FC<ContactProps> = ({
                       </span>
                     ) : (
                       <span className="font-semibold text-gray-600 flex ml-2">
-                        {contact.name}
+                        {contact.name} - {contact.unreadMessage}
                       </span>
                     )}
                   </div>

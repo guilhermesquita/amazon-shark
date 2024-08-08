@@ -425,6 +425,11 @@ export async function getUnreadMessages(idConversation: number, senderId: string
   return supabase.from("messages").select("*").eq("conversation_id", idConversation).eq("read", false).eq("sender_id",senderId)
 }
 
+export async function getAllMessagesUnreadBySenderAndConversation(senderId: string, conversationId: number) {
+  const supabase = createClient();
+  return supabase.from("messages").select("*").eq("conversation_id", conversationId).eq("sender_id", senderId).eq("read", false)
+}
+
 export async function sendMessage(messageData: MessagesDTO) {
   const supabase = createClient();
   

@@ -1,7 +1,6 @@
-// useConversations.ts
 import { useEffect, useState } from 'react';
 import { Client } from '@/components/types/client';
-import { getAllMessages, getClientById, getCompanyById, getConversationsExists, getConversationsReceivedAll, getConversationsSendedAll, getProfileById, sendMessage } from '@/components/actions';
+import { getAllMessages, getAllMessagesUnreadBySenderAndConversation, getClientById, getCompanyById, getConversationsExists, getConversationsReceivedAll, getConversationsSendedAll, getProfileById, sendMessage } from '@/components/actions';
 import { createClient } from '@/utils/supabase/client';
 import { UnreadMessageContextType, useUnreadMessage } from '@/app/context/unreadMessageContext';
 
@@ -11,6 +10,7 @@ export type ContactTypes = {
   companyId?: number;
   avatar: string;
   verified: boolean;
+  unreadMessage: number
 };
 
 type Message = {
@@ -22,6 +22,7 @@ export const useConversations = (client: Client | null) => {
   const [contacts, setContacts] = useState<ContactTypes[] | null>(null);
   const [proposalContacts, setProposalContacts] = useState<ContactTypes[] | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [unreadMessagesCounted, setUnreadMessagesCounted] = useState(0)
 
   const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
 
@@ -60,21 +61,35 @@ export const useConversations = (client: Client | null) => {
       if (client?.id) {
         const propostaChat = await getConversationsSendedAll(client.id);
         const data = propostaChat.data as any[];
-
+  
         if (data) {
           const contactsData = await Promise.all(
             data.map(async (conversation) => {
+              let sender: string;
+              conversation.profile1_id === client.id
+                ? (sender = conversation.profile2_id)
+                : (sender = conversation.profile1_id);
+  
+              const getUnreadMessage = await getAllMessagesUnreadBySenderAndConversation(
+                sender,
+                conversation.id
+              );
+              const countUnreadMessages = getUnreadMessage.data as any[];
+              const unreadMessagesCount = countUnreadMessages.length;
+  
               const findProfile = await getProfileById(conversation.profile2_id);
               const company = await getCompanyById(conversation.company_id);
               const arrCompany = company.data as any[];
               const nameCompany = arrCompany[0].name;
               const profile = findProfile.data as any[];
+  
               return {
                 name: `${profile[0].full_name.split(" ")[0]} da ${nameCompany}`,
                 id: profile[0].id,
                 avatar: profile[0].full_name[0].toUpperCase(),
                 companyId: arrCompany[0].company_id,
                 verified: profile[0].verification,
+                unreadMessage: unreadMessagesCount, // Contagem individual de mensagens não lidas
               };
             })
           );
@@ -84,6 +99,7 @@ export const useConversations = (client: Client | null) => {
     }
     fetchConversations();
   }, [client?.id]);
+  
 
   useEffect(() => {
     async function fetchConversationsProposal() {
@@ -93,6 +109,19 @@ export const useConversations = (client: Client | null) => {
         if (data) {
           const contactsData = await Promise.all(
             data.map(async (conversation) => {
+
+              let unreadMessagesCount: number = 0
+
+              for(let i in data) {
+                const teste = data[i].id;
+                let sender:string
+                data[i].profile1_id === client.id ? sender = data[i].profile2_id : sender = data[i].profile1_id
+                const getUnreadMessage = await getAllMessagesUnreadBySenderAndConversation(sender, teste);
+                const countUnreadMessages = getUnreadMessage.data as any[];
+                unreadMessagesCount = countUnreadMessages.length
+                // console.log(unreadMessagesCount)
+              }
+
               const findProfile = await getProfileById(conversation.profile1_id);
               const profile = findProfile.data as any[];
               return {
@@ -100,6 +129,7 @@ export const useConversations = (client: Client | null) => {
                 id: profile[0].id,
                 avatar: profile[0].full_name[0].toUpperCase(),
                 verified: profile[0].verification,
+                unreadMessage: unreadMessagesCount
               };
             })
           );
@@ -224,5 +254,7 @@ export const useConversations = (client: Client | null) => {
     openConversation,
     openConversationProposal,
     addUserMessage,
+    unreadMessagesCounted,
+    setUnreadMessagesCounted
   };
 };
