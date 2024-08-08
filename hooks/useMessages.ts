@@ -24,6 +24,7 @@ export const useConversations = (client: Client | null) => {
   const [proposalContacts, setProposalContacts] = useState<ContactTypes[] | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [unreadMessagesCounted, setUnreadMessagesCounted] = useState(0)
+  const [pendingMessages, setPendingMessages] = useState<string[]>([]);
 
   const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
 
@@ -111,7 +112,6 @@ export const useConversations = (client: Client | null) => {
         if (data) {
           const contactsData = await Promise.all(
             data.map(async (conversation) => {
-
               let sender: string;
               conversation.profile1_id === client.id
                 ? (sender = conversation.profile2_id)
@@ -132,7 +132,8 @@ export const useConversations = (client: Client | null) => {
                 avatar: profile[0].full_name[0].toUpperCase(),
                 verified: profile[0].verification,
                 idConversation: conversation.id,
-                unreadMessage: unreadMessagesCount
+                unreadMessage: unreadMessagesCount,
+                companyId: conversation.company_id,
               };
             })
           );
@@ -166,12 +167,10 @@ export const useConversations = (client: Client | null) => {
   };
 
   const openConversationProposal = async (contact: ContactTypes) => {
-
-    setUnreadMessage(2)
-
     const conversation = await getConversationsExists(
       contact.id,
-      client?.id as string
+      client?.id as string,
+      contact.companyId
     );
     if (conversation.data?.length) {
       const idConversation = conversation.data[0].id;
@@ -187,39 +186,45 @@ export const useConversations = (client: Client | null) => {
   };
 
   const addUserMessage = async (message: string, selectedContactId: string) => {
-    if (client?.id) {
+    if (client?.id && !pendingMessages.includes(message)) {
+      const newMessage = {
+        text: message,
+        sender: client.id,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setPendingMessages((prev) => [...prev, message]);
+  
       const selectClient = await getClientById(selectedContactId);
       const arrClientSelected = selectClient.data as any[];
       const idCompany = arrClientSelected[0].company_id;
-
+  
       const conversation = await getConversationsExists(
         client?.id as string,
         selectedContactId as string,
         idCompany
       );
-
+  
       const conversationProposal = await getConversationsExists(
         selectedContactId as string,
         client?.id as string
       );
-
-      if (conversationProposal.data?.length) {
-        const idConversation = conversationProposal.data[0].id;
+  
+      const idConversation = conversation.data?.length 
+        ? conversation.data[0].id 
+        : conversationProposal.data?.length 
+          ? conversationProposal.data[0].id 
+          : null;
+  
+      if (idConversation) {
         await sendMessage({
           content: message,
           conversation_id: idConversation,
           sender_id: client.id ?? "0",
         });
       }
-
-      if (conversation.data?.length) {
-        const idConversation = conversation.data[0].id;
-        await sendMessage({
-          content: message,
-          conversation_id: idConversation,
-          sender_id: client.id ?? "0",
-        });
-      }
+  
+      // Remover a mensagem pendente da lista após a requisição
+      setPendingMessages((prev) => prev.filter((msg) => msg !== message));
     }
   };
 
