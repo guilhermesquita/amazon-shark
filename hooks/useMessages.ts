@@ -89,7 +89,7 @@ export const useConversations = (client: Client | null) => {
                 avatar: profile[0].full_name[0].toUpperCase(),
                 companyId: arrCompany[0].company_id,
                 verified: profile[0].verification,
-                unreadMessage: unreadMessagesCount, // Contagem individual de mensagens não lidas
+                unreadMessage: unreadMessagesCount
               };
             })
           );
@@ -110,17 +110,17 @@ export const useConversations = (client: Client | null) => {
           const contactsData = await Promise.all(
             data.map(async (conversation) => {
 
-              let unreadMessagesCount: number = 0
-
-              for(let i in data) {
-                const teste = data[i].id;
-                let sender:string
-                data[i].profile1_id === client.id ? sender = data[i].profile2_id : sender = data[i].profile1_id
-                const getUnreadMessage = await getAllMessagesUnreadBySenderAndConversation(sender, teste);
-                const countUnreadMessages = getUnreadMessage.data as any[];
-                unreadMessagesCount = countUnreadMessages.length
-                // console.log(unreadMessagesCount)
-              }
+              let sender: string;
+              conversation.profile1_id === client.id
+                ? (sender = conversation.profile2_id)
+                : (sender = conversation.profile1_id);
+  
+              const getUnreadMessage = await getAllMessagesUnreadBySenderAndConversation(
+                sender,
+                conversation.id
+              );
+              const countUnreadMessages = getUnreadMessage.data as any[];
+              const unreadMessagesCount = countUnreadMessages.length;
 
               const findProfile = await getProfileById(conversation.profile1_id);
               const profile = findProfile.data as any[];
