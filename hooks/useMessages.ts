@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Client } from '@/components/types/client';
-import { getAllMessages, getAllMessagesUnreadBySenderAndConversation, getClientById, getCompanyById, getConversationsExists, getConversationsReceivedAll, getConversationsSendedAll, getProfileById, sendMessage } from '@/components/actions';
+import { getAllMessages, getAllMessagesUnreadBySenderAndConversation, getClientById, getCompanyById, getConversationsByd, getConversationsExists, getConversationsReceivedAll, getConversationsSendedAll, getProfileById, sendMessage } from '@/components/actions';
 import { createClient } from '@/utils/supabase/client';
 import { UnreadMessageContextType, useUnreadMessage } from '@/app/context/unreadMessageContext';
 
@@ -23,6 +23,7 @@ export const useConversations = (client: Client | null) => {
   const [contacts, setContacts] = useState<ContactTypes[] | null>(null);
   const [proposalContacts, setProposalContacts] = useState<ContactTypes[] | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [pendingMessages, setPendingMessages] = useState<string[]>([]);
   const [unreadMessagesCounted, setUnreadMessagesCounted] = useState(0)
 
   const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
@@ -166,12 +167,12 @@ export const useConversations = (client: Client | null) => {
   };
 
   const openConversationProposal = async (contact: ContactTypes) => {
-
-    setUnreadMessage(2)
-
+    const conversationById = await getConversationsByd(contact.idConversation)
+    const arr = conversationById.data as any[]
     const conversation = await getConversationsExists(
       contact.id,
-      client?.id as string
+      client?.id as string,
+      arr[0].company_id
     );
     if (conversation.data?.length) {
       const idConversation = conversation.data[0].id;
@@ -179,7 +180,7 @@ export const useConversations = (client: Client | null) => {
       if (fetchedMessages.data) {
         const formattedMessages = fetchedMessages.data.map((item: any) => ({
           text: item.content,
-          sender: item.sender_id,
+          sender: item.sender_id
         }));
         setMessages(formattedMessages);
       }
@@ -187,39 +188,45 @@ export const useConversations = (client: Client | null) => {
   };
 
   const addUserMessage = async (message: string, selectedContactId: string) => {
-    if (client?.id) {
+    if (client?.id && !pendingMessages.includes(message)) {
+      const newMessage = {
+        text: message,
+        sender: client.id,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setPendingMessages((prev) => [...prev, message]);
+  
       const selectClient = await getClientById(selectedContactId);
       const arrClientSelected = selectClient.data as any[];
       const idCompany = arrClientSelected[0].company_id;
-
+  
       const conversation = await getConversationsExists(
         client?.id as string,
         selectedContactId as string,
         idCompany
       );
-
+  
       const conversationProposal = await getConversationsExists(
         selectedContactId as string,
         client?.id as string
       );
-
-      if (conversationProposal.data?.length) {
-        const idConversation = conversationProposal.data[0].id;
+  
+      const idConversation = conversation.data?.length 
+        ? conversation.data[0].id 
+        : conversationProposal.data?.length 
+          ? conversationProposal.data[0].id 
+          : null;
+  
+      if (idConversation) {
         await sendMessage({
           content: message,
           conversation_id: idConversation,
           sender_id: client.id ?? "0",
         });
       }
-
-      if (conversation.data?.length) {
-        const idConversation = conversation.data[0].id;
-        await sendMessage({
-          content: message,
-          conversation_id: idConversation,
-          sender_id: client.id ?? "0",
-        });
-      }
+  
+      // Remover a mensagem pendente da lista após a requisição
+      setPendingMessages((prev) => prev.filter((msg) => msg !== message));
     }
   };
 

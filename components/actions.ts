@@ -373,6 +373,11 @@ export async function getConversationsExists(sender: string, recipient: string, 
   return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient)
 }
 
+export async function getConversationsByd(id: number){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").eq("id", id)
+}
+
 export async function getConversationsSendedAll(sender: String){
   const supabase = createClient();
   return supabase.from("conversations").select("*").eq("profile1_id", sender)
