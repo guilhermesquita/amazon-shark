@@ -20,7 +20,7 @@ export default function ContactFloatButton() {
           </svg>
         </div>
         <a className="absolute rounded-full transition-all duration-[0.2s] ease-out scale-y-0 group-hover:scale-y-100 group-hover:-translate-x-16   
-        flex p-2 hover:p-3 bg-green-300 scale-100 hover:bg-green-400 text-white" href="https://wa.me/5592984472680?text=" target="_blank">
+        flex p-2 hover:p-3 bg-green-300 scale-100 hover:bg-green-400 text-white" href="https://wa.me/559293445362?text=" target="_blank">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
