@@ -23,8 +23,8 @@ export const useConversations = (client: Client | null) => {
   const [contacts, setContacts] = useState<ContactTypes[] | null>(null);
   const [proposalContacts, setProposalContacts] = useState<ContactTypes[] | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [pendingMessages, setPendingMessages] = useState<string[]>([]);
   const [unreadMessagesCounted, setUnreadMessagesCounted] = useState(0)
+  const [pendingMessages, setPendingMessages] = useState<string[]>([]);
 
   const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
 
@@ -112,7 +112,6 @@ export const useConversations = (client: Client | null) => {
         if (data) {
           const contactsData = await Promise.all(
             data.map(async (conversation) => {
-
               let sender: string;
               conversation.profile1_id === client.id
                 ? (sender = conversation.profile2_id)
@@ -133,7 +132,8 @@ export const useConversations = (client: Client | null) => {
                 avatar: profile[0].full_name[0].toUpperCase(),
                 verified: profile[0].verification,
                 idConversation: conversation.id,
-                unreadMessage: unreadMessagesCount
+                unreadMessage: unreadMessagesCount,
+                companyId: conversation.company_id,
               };
             })
           );
