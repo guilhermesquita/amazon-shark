@@ -24,6 +24,7 @@ const ChatWeb: React.FC = () => {
   const [selectedContactIndex, setSelectedContactIndex] = useState<
     number | null
   >(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number|null>()
   const chatboxRef = useRef<HTMLDivElement>(null);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(
     null
@@ -65,6 +66,7 @@ const ChatWeb: React.FC = () => {
   const HandleOpenMessagesProposal = async (contact: ContactTypes, index: number) => {
     setIsChatboxOpen(true);
     setUnreadMessage(0)
+    setSelectedCompanyId(contact.companyId as number)
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
     setNameSelected(contact.name);
@@ -74,7 +76,7 @@ const ChatWeb: React.FC = () => {
 
   const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
-      addUserMessage(userMessage, selectedContactId as string);
+      addUserMessage(userMessage, selectedContactId as string, Number(selectedCompanyId));
       setUserMessage("");
     }
   }, [userMessage]);

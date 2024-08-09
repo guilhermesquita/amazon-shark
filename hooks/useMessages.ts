@@ -187,7 +187,7 @@ export const useConversations = (client: Client | null) => {
     }
   };
 
-  const addUserMessage = async (message: string, selectedContactId: string) => {
+  const addUserMessage = async (message: string, selectedContactId: string, selectCompanyId: number) => {
     if (client?.id && !pendingMessages.includes(message)) {
       const newMessage = {
         text: message,
@@ -195,7 +195,7 @@ export const useConversations = (client: Client | null) => {
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
       setPendingMessages((prev) => [...prev, message]);
-  
+
       const selectClient = await getClientById(selectedContactId);
       const arrClientSelected = selectClient.data as any[];
       const idCompany = arrClientSelected[0].company_id;
@@ -205,10 +205,18 @@ export const useConversations = (client: Client | null) => {
         selectedContactId as string,
         idCompany
       );
-  
+
+      let idMyCompany
+      if(selectCompanyId){
+        const company = await getCompanyById(selectCompanyId);
+        const arrCompany = company.data as any[];
+        idMyCompany = arrCompany[0].company_id;
+      }
+
       const conversationProposal = await getConversationsExists(
         selectedContactId as string,
-        client?.id as string
+        client?.id as string,
+        idMyCompany
       );
   
       const idConversation = conversation.data?.length 
