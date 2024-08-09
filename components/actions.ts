@@ -373,6 +373,11 @@ export async function getConversationsExists(sender: string, recipient: string, 
   return supabase.from("conversations").select("*").eq("profile1_id", sender).eq("profile2_id", recipient)
 }
 
+export async function getConversationsByd(id: number){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").eq("id", id)
+}
+
 export async function getConversationsSendedAll(sender: String){
   const supabase = createClient();
   return supabase.from("conversations").select("*").eq("profile1_id", sender)
@@ -412,7 +417,22 @@ export async function createConversation(conversationData: Conversations){
 
 export async function getAllMessages(conversationId: number){
   const supabase = createClient();
-  return supabase.from("messages").select("*").eq("conversation_id", conversationId)
+  return supabase.from("messages").select("*").eq("conversation_id", conversationId).order("created_at")
+}
+
+export async function getConversationsByProfile(profileId: string){
+  const supabase = createClient();
+  return supabase.from("conversations").select("*").or(`profile2_id.eq.${profileId},profile1_id.eq.${profileId}`);
+}
+
+export async function getUnreadMessages(idConversation: number, senderId: string) {
+  const supabase = createClient();
+  return supabase.from("messages").select("*").eq("conversation_id", idConversation).eq("read", false).eq("sender_id",senderId)
+}
+
+export async function getAllMessagesUnreadBySenderAndConversation(senderId: string, conversationId: number) {
+  const supabase = createClient();
+  return supabase.from("messages").select("*").eq("conversation_id", conversationId).eq("sender_id", senderId).eq("read", false)
 }
 
 export async function sendMessage(messageData: MessagesDTO) {
@@ -442,3 +462,20 @@ export async function sendMessage(messageData: MessagesDTO) {
     return null;
   }
 }
+
+export async function markMessagesAsRead(conversationId: number, userSender: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+  .from('messages')
+  .update({ read: true })
+  .eq('conversation_id', conversationId)
+  .eq('read', false)
+  .eq('sender_id', userSender)
+
+  if (error) {
+    console.error('Erro ao atualizar mensagens:', error);
+  } else {
+    console.log('Mensagens atualizadas com sucesso:', data);
+  }
+}
+

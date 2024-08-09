@@ -6,9 +6,12 @@ import { ContactTypes, useConversations } from "@/hooks/useMessages";
 import ContactList from "./ContactList/ContactList";
 import { Client } from "../types/client";
 import MessageList from "./MessageList/MessageList";
+import { UnreadMessageContextType, useUnreadMessage } from "@/app/context/unreadMessageContext";
+import { markMessagesAsRead } from "../actions";
 
 const ChatWeb: React.FC = () => {
   const { client } = useClient() as ClientContextType;
+  const { setUnreadMessage } = useUnreadMessage() as UnreadMessageContextType;
 
   const {
     messages,
@@ -21,6 +24,7 @@ const ChatWeb: React.FC = () => {
   const [selectedContactIndex, setSelectedContactIndex] = useState<
     number | null
   >(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number|null>()
   const chatboxRef = useRef<HTMLDivElement>(null);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(
     null
@@ -49,25 +53,30 @@ const ChatWeb: React.FC = () => {
     };
   }, []);
 
-  const HandleOpenMessages = (contact: ContactTypes, index: number) => {
+  const HandleOpenMessages = async (contact: ContactTypes, index: number) => {
     setIsChatboxOpen(true);
+    setUnreadMessage(0)
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
     setNameSelected(contact.name);
     openConversation(contact);
+    await markMessagesAsRead(contact.idConversation, contact.id)
   };
 
-  const HandleOpenMessagesProposal = (contact: ContactTypes, index: number) => {
+  const HandleOpenMessagesProposal = async (contact: ContactTypes, index: number) => {
     setIsChatboxOpen(true);
+    setUnreadMessage(0)
+    setSelectedCompanyId(contact.companyId as number)
     setSelectedContactId(contact.id);
     setSelectedContactIndex(index);
     setNameSelected(contact.name);
     openConversationProposal(contact);
+    await markMessagesAsRead(contact.idConversation, contact.id)
   };
 
   const handleSendMessage = useCallback(() => {
     if (userMessage.trim() !== "") {
-      addUserMessage(userMessage, selectedContactId as string);
+      addUserMessage(userMessage, selectedContactId as string, Number(selectedCompanyId));
       setUserMessage("");
     }
   }, [userMessage]);
