@@ -1,4 +1,5 @@
 import { GeistSans } from "geist/font/sans";
+import { Poppins} from '@next/font/google'
 import "./globals.css";
 import { Providers } from "@/store/Providers";
 
@@ -11,13 +12,15 @@ export const metadata = {
   title: "AmazonShark",
 };
 
+const poppins = Poppins({weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"], style: ["normal", "italic"], subsets: ["latin"]})
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.className}>
+    <html lang="pt-br" className={poppins.className}>
       <body className="bg-background text-foreground" style={{
         backgroundImage: `url(https://xkryxpqojxjdvsedntht.supabase.co/storage/v1/object/public/amazonshark/Background%20Patterns.svg)`,
         backgroundSize: "cover",

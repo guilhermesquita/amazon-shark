@@ -9,7 +9,7 @@ export default function Footer() {
         backgroundRepeat: "no-repeat",
         backgroundPosition: "left",
       }}
-      className="w-full bg-[#22B573] text-white border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs fixed-bottom"
+      className="w-full mt-auto bg-[#22B573] text-white border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs fixed-bottom"
     >
       <p>
         Powered by{" "}
