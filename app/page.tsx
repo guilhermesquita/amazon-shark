@@ -6,6 +6,7 @@ import HomeContent from "@/components/HomeContent";
 import { getBackGroundPhoto } from "../components/actions";
 import Spinner from "@/components/Spinner/Spinner";
 import ContactFloatButton from "@/components/contact/ContactFloatButton";
+import Banner from "@/components/banner/Banner";
 
 export default function Index() {
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
@@ -25,7 +26,10 @@ export default function Index() {
   }
 
   return (
-    <main className="w-full flex flex-col min-h-screen">
+    <main className="w-full flex flex-col min-h-screen gap-40">
+      <main className="w-full flex flex-col">
+
+      
       <Navbar />
       {/* <main className="w-full flex flex-col justify-center items-center flex-grow gap-7">
         <div
@@ -43,7 +47,7 @@ export default function Index() {
           Navegue
         </a>
       </main> */}
-      <article className="mt-20 w-full flex flex-col items-center flex-grow gap-7">
+      <article className="mt-10 w-full flex flex-col items-center flex-grow gap-7">
         <div className="flex flex-col h-[500px] animated-background bg-gradient-to-r from-[#22B573] via-[#22B573] to-[#005957]
         w-full items-center justify-center">
           <HomeContent />
@@ -52,6 +56,8 @@ export default function Index() {
           </a>
         </div>
       </article>
+      <Banner/> 
+      </main>
       <ContactFloatButton />
       <Footer />
     </main>
