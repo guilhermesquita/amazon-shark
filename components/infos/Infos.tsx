@@ -3,7 +3,7 @@ const allInfos = [
   {
     nameInfo: "Parceiros",
     content1:
-      "Aumento de faturamento Você sabia que mais de 48% das startups faturam por causa de parcerias?",
+      "Aumento de faturamento - Você sabia que mais de 48% das startups faturam por causa de parcerias?",
     content2:
       "Expansão e Estabilidade de mercado - As parcerias colaboram diretamente com sua estabilidade no mercado, expansão de clientes, e alcance de mais visibilidade.",
   },
