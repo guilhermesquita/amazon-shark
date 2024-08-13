@@ -8,11 +8,11 @@ type props = {
 
 export default function CardTeam(props: props) {
   return (
-    <div className="w-1/4 h-72 flex flex-col justify-center">
+    <div className="w-80 h-72 flex flex-col justify-center">
       <img
         src={props.photo}
         alt="Team Member"
-        className="w-full h-4/5 object-cover
+        className="w-full h-72 object-cover
         rounded-t-md
         "
       />

@@ -14,7 +14,7 @@ export default function Banner() {
     //   }, []);
 
   return (
-    <article className="w-full py-20 px-40 min-h-[500px] flex justify-between items-center lg:gap-10 bg-white 
+    <article className="w-full py-20 lg:px-40 px-20 min-h-[500px] flex justify-between items-center lg:gap-10 gap-20 bg-white 
     lg:flex-row flex-col animate-in"
     style={{
         backgroundImage: `url(https://xkryxpqojxjdvsedntht.supabase.co/storage/v1/object/public/amazonshark/FUNDO.png)`,
