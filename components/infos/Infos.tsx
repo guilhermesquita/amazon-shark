@@ -49,7 +49,7 @@ export default function Infos() {
       </li>
       <li className="flex flex-col gap-12 items-center">
         <h1 className="lg:w-3/4 w-full lg:text-3xl text-xl font-bold bg-white p-10 rounded-lg shadow-xl">{allInfos[selectedInfo].content1}</h1>
-        {allInfos[selectedInfo].content2 ? <p className="g:w-3/4 w-full border-2 p-10">{allInfos[selectedInfo].content2}</p> : null}
+        {allInfos[selectedInfo].content2 ? <p className="lg:w-3/4 w-full border-2 p-10">{allInfos[selectedInfo].content2}</p> : null}
       </li>
     </article>
   );
