@@ -32,7 +32,7 @@ export default function Infos() {
   const [selectedInfo, setSelectedInfo] = useState(0);
 
   return (
-    <article className="px-40 flex gap-14">
+    <article className="px-40 flex gap-14 h-[500px]">
       <li className="flex flex-col gap-24">
         {allInfos.map((info, Index) => {
           return (
