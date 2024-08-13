@@ -9,7 +9,7 @@ import HamburgerMenu from "./hambuger";
 export default function Navbar() {
 
   return (
-    <nav className="w-full flex justify-center h-16 bg-transparent">
+    <nav className="w-full p-5 flex justify-center h-16 bg-transparent">
       <div className="w-full flex justify-around items-center p-10 text-sm">
         <DeployButton />
         <MenuButton />
