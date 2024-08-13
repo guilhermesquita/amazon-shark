@@ -7,6 +7,7 @@ import { getBackGroundPhoto } from "../components/actions";
 import Spinner from "@/components/Spinner/Spinner";
 import ContactFloatButton from "@/components/contact/ContactFloatButton";
 import Banner from "@/components/banner/Banner";
+import Infos from "@/components/infos/Infos";
 
 export default function Index() {
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function Index() {
       </article>
       <Banner/> 
       </main>
+      <Infos/>
       <ContactFloatButton />
       <Footer />
     </main>
