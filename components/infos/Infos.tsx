@@ -32,25 +32,31 @@ export default function Infos() {
   const [selectedInfo, setSelectedInfo] = useState(0);
 
   return (
-    <article className="lg:px-40 px-20 flex lg:flex-row flex-col gap-14 lg:h-[500px] h-[800px]">
-      <li className="flex lg:flex-col flex-row gap-24 overflow-y-auto lg:overflow-y-visible">
-        {allInfos.map((info, Index) => {
-          return (
-            <ul
-                onClick={()=>setSelectedInfo(Index)}
-              className={`hover:text-[#22B573] text-base
-                font-medium duration-200 cursor-pointer ${Index === selectedInfo ? 'text-[#22B573]' : 'text-[#ADB4B1]'}`}
-              key={Index}
-            >
-              {info.nameInfo}
-            </ul>
-          );
-        })}
-      </li>
-      <li className="flex flex-col gap-12 items-center">
-        <h1 className="lg:w-3/4 w-full lg:text-3xl text-xl font-bold bg-white p-10 rounded-lg shadow-xl">{allInfos[selectedInfo].content1}</h1>
-        {allInfos[selectedInfo].content2 ? <p className="lg:w-3/4 w-full border-2 p-10">{allInfos[selectedInfo].content2}</p> : null}
-      </li>
+    <article className="lg:px-40 px-10 flex lg:flex-row flex-col gap-14 lg:h-[500px] h-auto">
+      <ul className="flex lg:flex-col flex-row gap-14 lg:gap-24 lg:overflow-y-visible overflow-y-auto flex-grow lg:flex-grow-0">
+        {allInfos.map((info, Index) => (
+          <li
+            onClick={() => setSelectedInfo(Index)}
+            className={`hover:text-[#22B573] text-base font-medium duration-200 cursor-pointer ${
+              Index === selectedInfo ? "text-[#22B573]" : "text-[#ADB4B1]"
+            }`}
+            key={Index}
+          >
+            {info.nameInfo}
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-col gap-12 items-center">
+        <h1 className="lg:w-3/4 w-full lg:text-3xl text-xl font-bold bg-white p-5 lg:p-10 rounded-lg shadow-xl">
+          {allInfos[selectedInfo].content1}
+        </h1>
+        {allInfos[selectedInfo].content2 && (
+          <p className="lg:w-3/4 w-full border-2 p-5 lg:p-10">
+            {allInfos[selectedInfo].content2}
+          </p>
+        )}
+      </div>
     </article>
   );
 }
+

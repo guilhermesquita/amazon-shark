@@ -33,13 +33,13 @@ export default function Index() {
         <Navbar />
         <article className="mt-10 w-full flex flex-col items-center flex-grow gap-7">
           <div
-            className="flex flex-col h-[500px] animated-background bg-gradient-to-r from-[#22B573] via-[#22B573] to-[#005957]
-        w-full items-center justify-center"
+            className="flex flex-col h-[400px] lg:h-[500px] animated-background bg-gradient-to-r from-[#22B573] via-[#22B573] to-[#005957]
+            w-full items-center justify-center"
           >
             <HomeContent />
             <a
               href="/portifolio"
-              className="bg-[#fff] hover:bg-[#f9f5f5] mt-9 py-4 px-10 rounded-md duration-300 drop-shadow-lg"
+              className="bg-[#fff] hover:bg-[#f9f5f5] mt-9 py-4 px-6 lg:px-10 rounded-md duration-300 drop-shadow-lg"
             >
               navegar
             </a>
@@ -47,7 +47,7 @@ export default function Index() {
         </article>
         <Banner />
       </main>
-      <article className="flex flex-col gap-40 mt-40">
+      <article className="flex flex-col gap-20 lg:gap-40 mt-20 lg:mt-40">
         <Infos />
         <OurTeam />
       </article>
