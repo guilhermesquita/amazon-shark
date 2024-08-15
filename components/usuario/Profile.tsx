@@ -16,12 +16,15 @@ const Profile = () => {
           {client?.full_name[0].toUpperCase()}
         </h2>
         <article className="flex flex-col gap-5">
-          <div className="flex flex-col bg-slate-400 p-2 rounded">
-           <p>{client?.full_name}</p> 
-           <p className="text-xs">nome completo</p> 
+          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 hover:rounded duration-200 cursor-pointer">
+            <p>{client?.full_name}</p>
+            <p className="text-xs text-[#757575]">nome completo</p>
           </div>
-          <p>{user?.email}</p>
-          <p>alterar senha</p>
+          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+            <p>{user?.email}</p>
+            <p className="text-xs text-[#757575]">email</p>
+          </div>
+          {/* <p>alterar senha</p> */}
         </article>
       </section>
     </article>

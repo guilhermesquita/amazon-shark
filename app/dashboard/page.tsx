@@ -16,7 +16,7 @@ type UserMetadata = {
 };
 
 export default function Dashboard() {
-  const [selectedSection, setSelectedSection] = useState("profile");
+  const [selectedSection, setSelectedSection] = useState("companies");
   const [user, setUser] = useState<UserMetadata | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,15 +25,17 @@ export default function Dashboard() {
   useEffect(() => {
     const checkUser = async () => {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/login');
+        router.push("/login");
       }
     };
 
     checkUser();
   }, [router]);
-  
+
   useEffect(() => {
     async function fetchUser() {
       const fetchedUser = await getUser();
@@ -50,24 +52,39 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center min-h-screen">
+    <main className="flex flex-col min-h-screen w-full">
       <Navbar />
-      <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-6xl w-full px-3">
-        <main className="flex-1 flex flex-col md:flex-row gap-6">
-          <Sidebar
-            selectedSection={selectedSection}
-            setSelectedSection={setSelectedSection}
-          />
-          <div className="w-full h-600">
-            {user ? (
-              selectedSection === "profile" ? <Profile /> : <Companies />
-            ) : (
-              <div>Faça o Login</div>
-            )}
-          </div>
-        </main>
+      
+      <div className="mt-10 flex-1 flex flex-col gap-10 items-center">
+        <article className="flex gap-10 justify-center">
+          <button
+            className={`${
+              selectedSection === "companies"
+                ? "text-[#22B573] underline"
+                : "text-stone-400"
+            }`}
+            onClick={() => setSelectedSection("companies")}
+          >
+            minhas empresas
+          </button>
+          <button
+            className={`${
+              selectedSection === "profile"
+                ? "text-[#22B573] underline"
+                : "text-stone-400"
+            }`}
+            onClick={() => setSelectedSection("profile")}
+          >
+            meu perfil
+          </button>
+        </article>
+
+        <section className="flex justify-center w-full mb-5">
+          {selectedSection === "profile" ? <Profile /> : <Companies />}
+        </section>
       </div>
+
       <Footer />
-    </div>
+    </main>
   );
 }
