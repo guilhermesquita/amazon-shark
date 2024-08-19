@@ -29,7 +29,7 @@ export default function Index() {
 
   return (
     <main className="w-full flex flex-col min-h-screen">
-      <main className="max-w-full flex flex-col">
+      <main className="flex flex-col">
         <Navbar />
         <article className="mt-10 w-full flex flex-col items-center flex-grow gap-7">
           <div

@@ -1,7 +1,7 @@
-import React,{useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 // importing aos
-import AOS from 'aos';
-import 'aos/dist/aos.css'
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const allInfos = [
   {
@@ -33,16 +33,18 @@ const allInfos = [
 ];
 
 export default function Infos() {
-
   useEffect(() => {
     AOS.init();
-  }, [])
+  }, []);
 
   const [selectedInfo, setSelectedInfo] = useState(0);
 
   return (
-    <article className="lg:px-40 px-10 flex lg:flex-row flex-col gap-14 lg:h-[500px] h-auto">
-      <ul className="flex lg:flex-col flex-row gap-14 lg:gap-24 lg:overflow-y-visible overflow-y-auto flex-grow lg:flex-grow-0" data-aos="fade-right">
+    <article className="w-full lg:px-40 px-10 flex lg:flex-row flex-col gap-14 lg:h-[500px] h-auto overflow-x-hidden">
+      <ul
+        className="flex lg:flex-col flex-row gap-14 lg:gap-24 lg:overflow-y-visible overflow-y-auto flex-grow lg:flex-grow-0"
+        data-aos="fade-right"
+      >
         {allInfos.map((info, Index) => (
           <li
             onClick={() => setSelectedInfo(Index)}
@@ -68,4 +70,3 @@ export default function Infos() {
     </article>
   );
 }
-
