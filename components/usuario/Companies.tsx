@@ -82,91 +82,92 @@ const CompaniesComponent = () => {
   };
 
   return (
-    <div className="p-4 border rounded-lg shadow-md h-full bg-background text-foreground">
+    <div className="p-4 overflow-x-hidden border rounded-lg shadow-md h-full bg-background text-foreground">
       {loading ? (
         <p>Carregando empresas...</p>
       ) : showAddForm ? (
         <AddEmpresa existingCompany={editingCompany} />
       ) : (
-        <div>
+        <div className="md:w-[50rem] w-[300px]">
           <Grid container spacing={3} alignItems="center">
-  <Grid item xs={12} md={6}>
-    <Typography variant="h4" component="h1">
-      Minhas Empresas
-    </Typography>
-  </Grid>
-  <Grid item xs={12} md={6} textAlign={{ xs: "center", md: "right" }}>
-    <Button
-      onClick={handleAddCompanyClick}
-      variant="contained"
-      sx={{
-        backgroundColor: "transparent",
-        color: "black",
-        "&:hover": {
-          backgroundColor: "#439D5D",
-          color: "white",
-        },
-      }}
-    >
-      <CiSquarePlus size={40} />
-      <p>Adicionar Nova Empresa</p>
-    </Button>
-  </Grid>
-  {companies.map((company) => (
-    <Grid item xs={12} sm={6} md={4} key={company.company_id}>
-      <Card
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          background: "var(--btn-background)",
-          borderRadius: "10px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-          height: "100%", // Garante que todos os cards tenham a mesma altura
-          minHeight: "350px", // Altura mínima para que os cards não fiquem muito pequenos
-          transition: "transform 0.2s",
-        }}
-      >
-        <CardMedia
-          component="img"
-          sx={{ height: "150px", objectFit: "cover" }}
-          image={
-            imageUrls[company.company_id] || "https://via.placeholder.com/150x150.png"
-          }
-          alt="Company Image"
-        />
-        <CardContent sx={{ flex: 1, padding: 2 }}>
-          <Typography
-            variant="h6"
-            component="div"
-            className="text-black"
-            sx={{ fontWeight: "bold" }}
-          >
-            {company.name}
-          </Typography>
-          <div className="mt-2 flex gap-2">
-            <Button
-              onClick={() => handleEditCompanyClick(company)}
-              variant="outlined"
-              className="text-white hover:bg-red-2000"
-              sx={{
-                borderColor: "var(--btn-background)",
-                color: "var(--btn-background)",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 0, 0, 0.1)",
-                  borderColor: "var(--btn-background)",
-                },
-              }}
-            >
-              <MdEdit size={20} />
-            </Button>
-            <Modal company_id={company.company_id} />
-          </div>
-        </CardContent>
-      </Card>
-    </Grid>
-  ))}
-</Grid>
+            <Grid item xs={7} md={6}>
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Minhas empresas</h2>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6} textAlign={{ xs: "center", md: "right" }}>
+              <Button
+                onClick={handleAddCompanyClick}
+                variant="contained"
+                sx={{
+                  backgroundColor: "transparent",
+                  color: "black",
+                  "&:hover": {
+                    backgroundColor: "#439D5D",
+                    color: "white",
+                  },
+                }}
+              >
+                <CiSquarePlus size={40} />
+                <p>Adicionar Nova Empresa</p>
+              </Button>
+            </Grid>
+            {companies.map((company) => (
+              <Grid item xs={12} sm={6} md={4} key={company.company_id}>
+                <Card
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    background: "var(--btn-background)",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                    height: "100%", // Garante que todos os cards tenham a mesma altura
+                    minHeight: "350px", // Altura mínima para que os cards não fiquem muito pequenos
+                    transition: "transform 0.2s",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    sx={{ height: "150px", objectFit: "cover" }}
+                    image={
+                      imageUrls[company.company_id] ||
+                      "https://via.placeholder.com/150x150.png"
+                    }
+                    alt="Company Image"
+                  />
+                  <CardContent sx={{ flex: 1, padding: 2 }}>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      className="text-black"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {company.name}
+                    </Typography>
+                    <div className="mt-2 flex gap-2">
+                      <Button
+                        onClick={() => handleEditCompanyClick(company)}
+                        variant="outlined"
+                        className="text-white hover:bg-red-2000"
+                        sx={{
+                          borderColor: "var(--btn-background)",
+                          color: "var(--btn-background)",
+                          "&:hover": {
+                            backgroundColor: "rgba(255, 0, 0, 0.1)",
+                            borderColor: "var(--btn-background)",
+                          },
+                        }}
+                      >
+                        <MdEdit size={20} />
+                      </Button>
+                      <Modal company_id={company.company_id} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </div>
       )}
     </div>

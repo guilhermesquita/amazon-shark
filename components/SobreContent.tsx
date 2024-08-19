@@ -20,7 +20,7 @@ function HomeContent() {
           <h3 className="text-xl font-bold text-[#626262]">
             Ninguém constrói nada grande sozinho
           </h3>
-          <p className="w-96 text-justify text-black font-bold">
+          <p className="md:w-96 w-full text-justify text-black font-bold">
             Acreditamos no potencial dos pequenos negócios. Nossa plataforma
             ajuda micro e pequenas empresas a encontrarem parceiros,
             investidores e novos sócios. Com a oportunidade certa, podem
