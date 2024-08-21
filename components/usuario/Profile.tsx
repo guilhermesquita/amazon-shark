@@ -1,11 +1,31 @@
 import { ClientContextType, useClient } from "@/app/context/clientContext";
 import { UserContextType, useUser } from "@/app/context/userContext";
-import { Divider } from "@mui/material";
 import React from "react";
+import { signOut } from "../actions";
+import ModalEditNameUser from "./components/modalEditNameUser/ModalEditNameUser";
+import { useModalEditNameUser } from "./components/modalEditNameUser/ModalEditNameUserContext";
+import { useModalEditEmailUser } from "./components/modalEditEmailUser/ModalEditEmailUserContext";
+import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditEmailUserContext";
+// import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditNameUserContext";
+import { useModalEditPhoneNumber } from "./components/modalEditPhone/ModalEditPhoneNumberContext";
+import { useModalConfirmLogout } from './components/modalConfirmLogout/ModalEditPhoneNumberContext';
 
 const Profile = () => {
-  const { client } = useClient() as ClientContextType;
-  const { user } = useUser() as UserContextType;
+  const { client, setClient } = useClient() as ClientContextType;
+  const { user, setUser } = useUser() as UserContextType;
+
+  const handleLogout = async (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+    await signOut();
+    setUser(null);
+    setClient(null);
+  };
+
+  const { openModalEditName } = useModalEditNameUser();
+  const { openModalEditEmail } = useModalEditEmailUser();
+  const { openModalEditPassword } = useModalEditPasswordUser();
+  const { openModalEditPhoneNumber } = useModalEditPhoneNumber();
+  const { openModalConfirmLogout } = useModalConfirmLogout();
 
   return (
     <article className="p-10 md:w-[50rem] overflow-x-hidden gap-10 bg-white border rounded-lg shadow-md h-full flex flex-col">
@@ -16,23 +36,39 @@ const Profile = () => {
         <h2 className="w-32 h-32 bg-gray-400 rounded flex items-center justify-center flex-shrink-0">
           {client?.full_name[0].toUpperCase()}
         </h2>
-        <article className="flex flex-col gap-5">
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 hover:rounded duration-200 cursor-pointer">
+        <article className="flex flex-col gap-5 mt-2">
+          <div
+            onClick={openModalEditName}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 hover:rounded duration-200 cursor-pointer"
+          >
             <p>{client?.full_name}</p>
             <p className="text-xs text-[#757575]">nome completo</p>
           </div>
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+          <div
+            onClick={openModalEditEmail}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer"
+          >
             <p>{user?.email}</p>
             <p className="text-xs text-[#757575]">email</p>
           </div>
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+          <div
+            onClick={openModalEditPhoneNumber}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer"
+          >
             <p>{client?.phone}</p>
             <p className="text-xs text-[#757575]">Número de celular</p>
           </div>
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+          <div
+            onClick={openModalEditPassword}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer"
+          >
             alterar Senha
           </div>
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+          <div
+            onClick={openModalConfirmLogout}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 
+          rounded duration-200 cursor-pointer hover:text-red-600"
+          >
             sair
           </div>
         </article>
