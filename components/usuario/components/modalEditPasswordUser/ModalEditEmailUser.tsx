@@ -7,7 +7,7 @@ interface modalProps {
   onCloseModal: () => void;
 }
 
-const ModalEditEmailUser: React.FC<modalProps> = ({
+const ModalEditPasswordUser: React.FC<modalProps> = ({
   isOpen,
   onCloseModal,
 }: modalProps) => {
@@ -52,7 +52,7 @@ const ModalEditEmailUser: React.FC<modalProps> = ({
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Editar Email
+                  Alterar Senha
                 </h3>
                 <button
                   type="button"
@@ -85,12 +85,23 @@ const ModalEditEmailUser: React.FC<modalProps> = ({
                     <label
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      Coloque aqui seu novo email
+                      Coloque aqui sua senha
                     </label>
                     <input
                       type="text"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                      placeholder="mail@email.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Confirmar senha
+                    </label>
+                    <input
+                      type="text"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       required
                     />
                   </div>
@@ -109,4 +120,4 @@ const ModalEditEmailUser: React.FC<modalProps> = ({
   );
 };
 
-export default ModalEditEmailUser;
+export default ModalEditPasswordUser;

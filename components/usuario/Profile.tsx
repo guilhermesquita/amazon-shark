@@ -4,7 +4,9 @@ import React from "react";
 import { signOut } from "../actions";
 import ModalEditNameUser from "./components/modalEditNameUser/ModalEditNameUser";
 import { useModalEditNameUser } from "./components/modalEditNameUser/ModalEditNameUserContext";
-import { useModalEditEmailUser } from "./components/modalEditEmailUser/ModalEditNameUserContext";
+import { useModalEditEmailUser } from "./components/modalEditEmailUser/ModalEditEmailUserContext";
+import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditEmailUserContext";
+// import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditNameUserContext";
 
 const Profile = () => {
   const { client, setClient } = useClient() as ClientContextType;
@@ -19,6 +21,7 @@ const Profile = () => {
 
   const { openModalEditName } = useModalEditNameUser();
   const { openModalEditEmail } = useModalEditEmailUser();
+  const { openModalEditPassword } = useModalEditPasswordUser();
 
   return (
     <article className="p-10 md:w-[50rem] overflow-x-hidden gap-10 bg-white border rounded-lg shadow-md h-full flex flex-col">
@@ -48,7 +51,9 @@ const Profile = () => {
             <p>{client?.phone}</p>
             <p className="text-xs text-[#757575]">Número de celular</p>
           </div>
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+          <div 
+          onClick={openModalEditPassword}
+          className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
             alterar Senha
           </div>
           <div
