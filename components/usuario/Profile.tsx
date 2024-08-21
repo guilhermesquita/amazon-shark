@@ -4,6 +4,7 @@ import React from "react";
 import { signOut } from "../actions";
 import ModalEditNameUser from "./components/modalEditNameUser/ModalEditNameUser";
 import { useModalEditNameUser } from "./components/modalEditNameUser/ModalEditNameUserContext";
+import { useModalEditEmailUser } from "./components/modalEditEmailUser/ModalEditNameUserContext";
 
 const Profile = () => {
   const { client, setClient } = useClient() as ClientContextType;
@@ -16,7 +17,8 @@ const Profile = () => {
     setClient(null);
   };
 
-  const {open} = useModalEditNameUser()
+  const { openModalEditName } = useModalEditNameUser();
+  const { openModalEditEmail } = useModalEditEmailUser();
 
   return (
     <article className="p-10 md:w-[50rem] overflow-x-hidden gap-10 bg-white border rounded-lg shadow-md h-full flex flex-col">
@@ -28,12 +30,17 @@ const Profile = () => {
           {client?.full_name[0].toUpperCase()}
         </h2>
         <article className="flex flex-col gap-5 mt-2">
-          <div onClick={open}
-          className="flex flex-col hover:bg-[#cbcbcb] p-2 hover:rounded duration-200 cursor-pointer">
+          <div
+            onClick={openModalEditName}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 hover:rounded duration-200 cursor-pointer"
+          >
             <p>{client?.full_name}</p>
             <p className="text-xs text-[#757575]">nome completo</p>
           </div>
-          <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
+          <div
+            onClick={openModalEditEmail}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer"
+          >
             <p>{user?.email}</p>
             <p className="text-xs text-[#757575]">email</p>
           </div>
@@ -44,8 +51,11 @@ const Profile = () => {
           <div className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer">
             alterar Senha
           </div>
-          <div onClick={handleLogout} className="flex flex-col hover:bg-[#cbcbcb] p-2 
-          rounded duration-200 cursor-pointer hover:text-red-600">
+          <div
+            onClick={handleLogout}
+            className="flex flex-col hover:bg-[#cbcbcb] p-2 
+          rounded duration-200 cursor-pointer hover:text-red-600"
+          >
             sair
           </div>
         </article>

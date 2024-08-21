@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 import ModalEditNameUser from "./ModalEditNameUser";
 
 interface ModalEditNameContextType {
-  open: () => void;
+  openModalEditName: () => void;
 }
 
 export const ModalEditNameUserContext = createContext<ModalEditNameContextType>(
@@ -19,7 +19,7 @@ export default function ModalEditNameUserProvider({
   return (
     <ModalEditNameUserContext.Provider
       value={{
-        open: () => setOpen(true),
+        openModalEditName: () => setOpen(true),
       }}
     >
       {children}
