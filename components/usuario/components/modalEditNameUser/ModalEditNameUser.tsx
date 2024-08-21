@@ -25,6 +25,12 @@ const ModalEditNameUser: React.FC<modalProps> = ({
     }, 500); 
   };
 
+  const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
   return (
     <>
       {isOpen || isClosing ? (
@@ -35,6 +41,7 @@ const ModalEditNameUser: React.FC<modalProps> = ({
           className={`fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center w-full max-h-full z-50 ${
             isOpen ? "block" : "hidden"
           }`}
+          onClick={handleClickOutside}
         >
           <div
             className={`relative p-4 w-full max-w-md max-h-full ${
