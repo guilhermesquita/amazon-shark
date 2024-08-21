@@ -8,6 +8,7 @@ import { useModalEditEmailUser } from "./components/modalEditEmailUser/ModalEdit
 import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditEmailUserContext";
 // import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditNameUserContext";
 import { useModalEditPhoneNumber } from "./components/modalEditPhone/ModalEditPhoneNumberContext";
+import { useModalConfirmLogout } from './components/modalConfirmLogout/ModalEditPhoneNumberContext';
 
 const Profile = () => {
   const { client, setClient } = useClient() as ClientContextType;
@@ -24,6 +25,7 @@ const Profile = () => {
   const { openModalEditEmail } = useModalEditEmailUser();
   const { openModalEditPassword } = useModalEditPasswordUser();
   const { openModalEditPhoneNumber } = useModalEditPhoneNumber();
+  const { openModalConfirmLogout } = useModalConfirmLogout();
 
   return (
     <article className="p-10 md:w-[50rem] overflow-x-hidden gap-10 bg-white border rounded-lg shadow-md h-full flex flex-col">
@@ -63,7 +65,7 @@ const Profile = () => {
             alterar Senha
           </div>
           <div
-            onClick={handleLogout}
+            onClick={openModalConfirmLogout}
             className="flex flex-col hover:bg-[#cbcbcb] p-2 
           rounded duration-200 cursor-pointer hover:text-red-600"
           >

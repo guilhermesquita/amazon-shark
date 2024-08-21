@@ -12,6 +12,7 @@ import ModalEditNameUserProvider from "@/components/usuario/components/modalEdit
 import ModalEditEmailUserProvider from "../../components/usuario/components/modalEditEmailUser/ModalEditEmailUserContext";
 import ModalEditPasswordUserProvider from "@/components/usuario/components/modalEditPasswordUser/ModalEditEmailUserContext";
 import ModalEditPhoneNumberProvider from "@/components/usuario/components/modalEditPhone/ModalEditPhoneNumberContext";
+import ModalConfirmLogoutProvider from "@/components/usuario/components/modalConfirmLogout/ModalEditPhoneNumberContext";
 // import ModalEditPasswordUser from "@/components/usuario/components/modalEditPasswordUser/ModalEditPasswordUser";
 // import ModalEditPasswordUserProvider from "../../components/usuario/components/modalEditPasswordUser/ModalEditNameUserContext";
 
@@ -57,47 +58,53 @@ export default function Dashboard() {
   }
 
   return (
-    <ModalEditPhoneNumberProvider>
-      <ModalEditPasswordUserProvider>
-        <ModalEditNameUserProvider>
-          <ModalEditEmailUserProvider>
-            <main className="flex flex-col min-h-screen w-full">
-              <Navbar />
+    <ModalConfirmLogoutProvider>
+      <ModalEditPhoneNumberProvider>
+        <ModalEditPasswordUserProvider>
+          <ModalEditNameUserProvider>
+            <ModalEditEmailUserProvider>
+              <main className="flex flex-col min-h-screen w-full">
+                <Navbar />
 
-              <div className="mt-10 flex-1 flex flex-col gap-10 items-center">
-                <article className="flex gap-10 justify-center">
-                  <button
-                    className={`${
-                      selectedSection === "companies"
-                        ? "text-[#22B573] underline"
-                        : "text-stone-400"
-                    }`}
-                    onClick={() => setSelectedSection("companies")}
-                  >
-                    minhas empresas
-                  </button>
-                  <button
-                    className={`${
-                      selectedSection === "profile"
-                        ? "text-[#22B573] underline"
-                        : "text-stone-400"
-                    }`}
-                    onClick={() => setSelectedSection("profile")}
-                  >
-                    meu perfil
-                  </button>
-                </article>
+                <div className="mt-10 flex-1 flex flex-col gap-10 items-center">
+                  <article className="flex gap-10 justify-center">
+                    <button
+                      className={`${
+                        selectedSection === "companies"
+                          ? "text-[#22B573] underline"
+                          : "text-stone-400"
+                      }`}
+                      onClick={() => setSelectedSection("companies")}
+                    >
+                      minhas empresas
+                    </button>
+                    <button
+                      className={`${
+                        selectedSection === "profile"
+                          ? "text-[#22B573] underline"
+                          : "text-stone-400"
+                      }`}
+                      onClick={() => setSelectedSection("profile")}
+                    >
+                      meu perfil
+                    </button>
+                  </article>
 
-                <section className="flex justify-center w-full mb-5">
-                  {selectedSection === "profile" ? <Profile /> : <Companies />}
-                </section>
-              </div>
+                  <section className="flex justify-center w-full mb-5">
+                    {selectedSection === "profile" ? (
+                      <Profile />
+                    ) : (
+                      <Companies />
+                    )}
+                  </section>
+                </div>
 
-              <Footer />
-            </main>
-          </ModalEditEmailUserProvider>
-        </ModalEditNameUserProvider>
-      </ModalEditPasswordUserProvider>
-    </ModalEditPhoneNumberProvider>
+                <Footer />
+              </main>
+            </ModalEditEmailUserProvider>
+          </ModalEditNameUserProvider>
+        </ModalEditPasswordUserProvider>
+      </ModalEditPhoneNumberProvider>
+    </ModalConfirmLogoutProvider>
   );
 }
