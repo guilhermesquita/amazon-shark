@@ -80,7 +80,7 @@ const ModalEditEmailUser: React.FC<modalProps> = ({
                 </button>
               </div>
               <div className="p-4 md:p-5">
-                <form className="space-y-4" action="#">
+                <form className="space-y-4">
                   <div>
                     <label
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"

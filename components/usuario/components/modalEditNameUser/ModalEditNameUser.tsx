@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useForm } from "react-hook-form";
+import { editNameProfile } from "@/components/actions";
+import { UserContextType, useUser } from "@/app/context/userContext";
+import { useClient } from "@/app/context/clientContext";
+import { Client } from "@/components/types/client";
 
 interface modalProps {
   isOpen: boolean;
   onCloseModal: () => void;
+}
+
+interface FormData {
+  name: string;
 }
 
 const ModalEditNameUser: React.FC<modalProps> = ({
@@ -13,9 +22,48 @@ const ModalEditNameUser: React.FC<modalProps> = ({
 }: modalProps) => {
   const [isClosing, setIsClosing] = useState(false);
 
+  const { user } = useUser() as UserContextType;
+  const { client, setClient } = useClient()
+
+  const defaultValue = client?.full_name as string
+
   useEffect(() => {
     AOS.init();
   }, []);
+
+  const { register, handleSubmit, formState, reset } = useForm({
+    mode: 'onSubmit',
+    // resolver: yupResolver(schema),
+    defaultValues: {
+        name: defaultValue,
+    }
+})
+
+const handleSubmitForm = async (data: FormData) => {
+  try {
+    // Atualiza o nome do perfil
+    await editNameProfile(user?.id ?? '', data.name);
+
+    // Cria o novo objeto Client
+    const updatedClient: Client = {
+      id: client?.id ?? '',
+      full_name: data.name,
+      email: user?.email ?? '',
+      cpf: client?.cpf ?? '',
+      phone: client?.phone ?? '',
+      updatedAt: client?.updatedAt ?? new Date(),
+      verification: client?.verification ?? false
+    };
+
+    // Atualiza o estado com o novo cliente
+    setClient(updatedClient);
+  } catch (error) {
+    console.error('Erro ao atualizar o perfil:', error);
+  } finally {
+    // Fecha o modal independentemente do resultado
+    handleClose();
+  }
+};
 
   const handleClose = () => {
     setIsClosing(true);
@@ -80,7 +128,7 @@ const ModalEditNameUser: React.FC<modalProps> = ({
                 </button>
               </div>
               <div className="p-4 md:p-5">
-                <form className="space-y-4" action="#">
+                <form className="space-y-4" onSubmit={handleSubmit(handleSubmitForm)}>
                   <div>
                     <label
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -91,7 +139,7 @@ const ModalEditNameUser: React.FC<modalProps> = ({
                       type="text"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       placeholder="seu nome completo"
-                      required
+                      required {...register("name", { required: true })}  
                     />
                   </div>
                   <button

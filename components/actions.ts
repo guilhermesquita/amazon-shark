@@ -355,6 +355,14 @@ export async function getProfileById(id: string){
   return supabase.from("profiles").select('*').eq("id", id)
 }
 
+export async function editNameProfile(id: string, fullName: string){
+  const supabase = createClient();
+  return supabase.from('profiles')
+  .update({ full_name: fullName })
+  .eq('id', id)
+  .select()
+}
+
 export async function editVerificationById(id: string){
   const supabase = createClient();
   return supabase.from("profiles").update({verification: true}).eq("id", id)
