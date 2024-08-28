@@ -23,56 +23,59 @@ const ModalEditNameUser: React.FC<modalProps> = ({
   const [isClosing, setIsClosing] = useState(false);
 
   const { user } = useUser() as UserContextType;
-  const { client, setClient } = useClient()
+  const { client, setClient } = useClient();
 
-  const defaultValue = client?.full_name as string
+  const defaultValue = client?.full_name as string;
 
   useEffect(() => {
     AOS.init();
   }, []);
 
   const { register, handleSubmit, formState, reset } = useForm({
-    mode: 'onSubmit',
+    mode: "onSubmit",
     // resolver: yupResolver(schema),
     defaultValues: {
-        name: defaultValue,
+      name: defaultValue,
+    },
+  });
+
+  const handleSubmitForm = async (data: FormData) => {
+    try {
+      // Atualiza o nome do perfil
+      const idUser = user?.id as string;
+      await editNameProfile({
+        id: idUser ?? "",
+        property: "full_name",
+        data: data.name,
+      });
+
+      // Cria o novo objeto Client
+      const updatedClient: Client = {
+        id: client?.id ?? "",
+        full_name: data.name,
+        email: user?.email ?? "",
+        cpf: client?.cpf ?? "",
+        phone: client?.phone ?? "",
+        updatedAt: client?.updatedAt ?? new Date(),
+        verification: client?.verification ?? false,
+      };
+
+      // Atualiza o estado com o novo cliente
+      setClient(updatedClient);
+    } catch (error) {
+      console.error("Erro ao atualizar o perfil:", error);
+    } finally {
+      // Fecha o modal independentemente do resultado
+      handleClose();
     }
-})
-
-const handleSubmitForm = async (data: FormData) => {
-  try {
-    // Atualiza o nome do perfil
-    const idUser = user?.id as string
-    await editNameProfile({id: idUser ?? '', property: 'full_name', data: data.name});
-
-
-    // Cria o novo objeto Client
-    const updatedClient: Client = {
-      id: client?.id ?? '',
-      full_name: data.name,
-      email: user?.email ?? '',
-      cpf: client?.cpf ?? '',
-      phone: client?.phone ?? '',
-      updatedAt: client?.updatedAt ?? new Date(),
-      verification: client?.verification ?? false
-    };
-
-    // Atualiza o estado com o novo cliente
-    setClient(updatedClient);
-  } catch (error) {
-    console.error('Erro ao atualizar o perfil:', error);
-  } finally {
-    // Fecha o modal independentemente do resultado
-    handleClose();
-  }
-};
+  };
 
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onCloseModal();
-    }, 500); 
+    }, 500);
   };
 
   const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -130,23 +133,23 @@ const handleSubmitForm = async (data: FormData) => {
                 </button>
               </div>
               <div className="p-4 md:p-5">
-                <form className="space-y-4" onSubmit={handleSubmit(handleSubmitForm)}>
+                <form
+                  className="space-y-4"
+                  onSubmit={handleSubmit(handleSubmitForm)}
+                >
                   <div>
-                    <label
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                       Coloque aqui seu nome completo
                     </label>
                     <input
                       type="text"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       placeholder="seu nome completo"
-                      required {...register("name", { required: true })}  
+                      required
+                      {...register("name", { required: true })}
                     />
                   </div>
-                  <button
-                    className="w-full text-white bg-[#22B573] hover:bg-[#22b573dd] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center duration-200"
-                  >
+                  <button className="w-full text-white bg-[#22B573] hover:bg-[#22b573dd] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center duration-200">
                     atualizar
                   </button>
                 </form>
