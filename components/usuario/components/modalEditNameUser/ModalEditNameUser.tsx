@@ -42,7 +42,9 @@ const ModalEditNameUser: React.FC<modalProps> = ({
 const handleSubmitForm = async (data: FormData) => {
   try {
     // Atualiza o nome do perfil
-    await editNameProfile(user?.id ?? '', data.name);
+    const idUser = user?.id as string
+    await editNameProfile({id: idUser ?? '', property: 'full_name', data: data.name});
+
 
     // Cria o novo objeto Client
     const updatedClient: Client = {
