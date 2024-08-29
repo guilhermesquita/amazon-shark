@@ -7,6 +7,7 @@ import { UserMetadata } from "./types/user";
 import { Companies } from "./types/companies";
 import { Conversations } from "./types/conversations";
 import { MessagesDTO } from "./types/dto/messagesDTO";
+import { EditProfileDTO } from './types/dto/EditProfileByIdDTO';
 
 export async function getUser(): Promise<UserMetadata | null> {
   const supabase = createClient();
@@ -353,6 +354,18 @@ export async function getMainLogo(): Promise<string | null> {
 export async function getProfileById(id: string){
   const supabase = createClient();
   return supabase.from("profiles").select('*').eq("id", id)
+}
+
+export async function editNameProfile({id, property, data}: EditProfileDTO){
+  const supabase = createClient();
+
+  const updateObject = { [property]: data };
+
+  return supabase
+    .from('profiles')
+    .update(updateObject)
+    .eq('id', id)
+    .select();
 }
 
 export async function editVerificationById(id: string){

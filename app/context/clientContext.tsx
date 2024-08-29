@@ -9,7 +9,7 @@ export type ClientContextType = {
   setCompany: (value: any | null) => void;
 };
 
-export const ClientContext = createContext<ClientContextType | null>(null);
+export const ClientContext = createContext<ClientContextType>({} as ClientContextType);
 
 interface ClientProviderProps {
   children: React.ReactNode;
