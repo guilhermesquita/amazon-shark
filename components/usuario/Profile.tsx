@@ -5,7 +5,7 @@ import { signOut } from "../actions";
 import ModalEditNameUser from "./components/modalEditNameUser/ModalEditNameUser";
 import { useModalEditNameUser } from "./components/modalEditNameUser/ModalEditNameUserContext";
 import { useModalEditEmailUser } from "./components/modalEditEmailUser/ModalEditEmailUserContext";
-import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditEmailUserContext";
+import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditPasswordUserContext";
 // import { useModalEditPasswordUser } from "./components/modalEditPasswordUser/ModalEditNameUserContext";
 import { useModalEditPhoneNumber } from "./components/modalEditPhone/ModalEditPhoneNumberContext";
 import { useModalConfirmLogout } from './components/modalConfirmLogout/ModalEditPhoneNumberContext';

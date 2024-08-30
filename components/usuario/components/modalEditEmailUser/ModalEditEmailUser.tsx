@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useForm } from "react-hook-form";
+import { UserContextType, useUser } from "@/app/context/userContext";
+import { updateEmail } from "@/app/login/actions";
+import { UserMetadata } from "@/components/types/user";
 
 interface modalProps {
   isOpen: boolean;
   onCloseModal: () => void;
+}
+
+interface FormData {
+  email: string;
 }
 
 const ModalEditEmailUser: React.FC<modalProps> = ({
@@ -13,16 +21,50 @@ const ModalEditEmailUser: React.FC<modalProps> = ({
 }: modalProps) => {
   const [isClosing, setIsClosing] = useState(false);
 
+  const { user, setUser } = useUser() as UserContextType;
+
   useEffect(() => {
     AOS.init();
   }, []);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onSubmit",
+    // resolver: yupResolver(schema),
+    defaultValues: {
+      email: user?.email ?? "",
+    },
+  });
 
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onCloseModal();
-    }, 500); 
+    }, 500);
+  };
+
+  const handleSubmitForm = async (data: FormData) => {
+    try {
+      await updateEmail(data.email);
+      const updatedUser: UserMetadata = {
+        ...user, 
+        id: user?.id ?? "", 
+        email: data.email, 
+        documents: user?.documents ?? [], 
+        user_metadata: user?.user_metadata ?? { fullName: "" },
+      };
+
+      setUser(updatedUser); 
+    } catch (error) {
+      console.error("Erro ao atualizar o email do usuário:", error);
+    }
+    finally{
+      handleClose();
+    }
   };
 
   const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -80,23 +122,23 @@ const ModalEditEmailUser: React.FC<modalProps> = ({
                 </button>
               </div>
               <div className="p-4 md:p-5">
-                <form className="space-y-4">
+                <form
+                  className="space-y-4"
+                  onSubmit={handleSubmit(handleSubmitForm)}
+                >
                   <div>
-                    <label
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                       Coloque aqui seu novo email
                     </label>
                     <input
-                      type="text"
+                      type="email"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       placeholder="mail@email.com"
                       required
+                      {...register("email", { required: true })}
                     />
                   </div>
-                  <button
-                    className="w-full text-white bg-[#22B573] hover:bg-[#22b573dd] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center duration-200"
-                  >
+                  <button className="w-full text-white bg-[#22B573] hover:bg-[#22b573dd] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center duration-200">
                     atualizar
                   </button>
                 </form>

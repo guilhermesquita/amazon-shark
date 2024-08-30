@@ -33,7 +33,7 @@ export async function signUp(formData: FormData) {
   const cpf = formData.get("cpf") as string;
   const phone = formData.get("phone") as string;
 
-  const teste = await supabase.auth.signUp({
+  const signup = await supabase.auth.signUp({
     email: email,
     password: password,
     options: {
@@ -46,9 +46,25 @@ export async function signUp(formData: FormData) {
     },
   });
 
-  if (teste.error) {
-    return redirect(`/login?message=Could not authenticate user error: ${teste.error.message}`);
+  if (signup.error) {
+    return redirect(`/login?message=Could not authenticate user error: ${signup.error.message}`);
   }
 
   return redirect("/login?message=Confirme o Email (Verifique a caixa de spam)");
+}
+
+export async function updateEmail(email: string){
+  const supabase = createClient()
+  const updateEmail = await supabase.auth.updateUser({email: email});
+  if(updateEmail.error){
+    return redirect(`/profile?message=Could not update email error: ${updateEmail.error.message}`);
+  }
+}
+
+export async function updatePassword(password: string){
+  const supabase = createClient()
+  const updatePassword = await supabase.auth.updateUser({password});
+  if(updatePassword.error){
+    return redirect(`/profile?message=Could not update password error: ${updatePassword.error.message}`);
+  }
 }

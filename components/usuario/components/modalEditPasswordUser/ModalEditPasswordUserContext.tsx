@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
-import ModalEditPasswordUser from "./ModalEditEmailUser";
+import ModalEditPasswordUser from "./ModalEditPasswordUser";
+
 
 interface ModalEditPasswordContextType {
   openModalEditPassword: () => void;
