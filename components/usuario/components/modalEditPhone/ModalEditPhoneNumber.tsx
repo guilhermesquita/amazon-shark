@@ -65,12 +65,10 @@ const ModalEditPhoneNumber: React.FC<modalProps> = ({
         verification: client?.verification ?? false
       };
   
-      // Atualiza o estado com o novo cliente
       setClient(updatedClient);
     } catch (error) {
       console.error('Erro ao atualizar o perfil:', error);
     } finally {
-      // Fecha o modal independentemente do resultado
       handleClose();
     }
   };

@@ -8,7 +8,7 @@ export type UserContextType = {
   setUser: (value: UserMetadata | null) => void;
 };
 
-export const UserContext = createContext<UserContextType | null>(null);
+export const UserContext = createContext<UserContextType>({} as UserContextType);
 
 interface UserProviderProps {
   children: React.ReactNode;

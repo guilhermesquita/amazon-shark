@@ -52,3 +52,11 @@ export async function signUp(formData: FormData) {
 
   return redirect("/login?message=Confirme o Email (Verifique a caixa de spam)");
 }
+
+export async function updateEmail(email: string){
+  const supabase = createClient()
+  const teste = await supabase.auth.updateUser({email: email});
+  if(teste.error){
+    return redirect(`/profile?message=Could not update email error: ${teste.error.message}`);
+  }
+}

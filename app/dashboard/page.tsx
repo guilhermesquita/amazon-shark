@@ -10,9 +10,9 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import ModalEditNameUserProvider from "@/components/usuario/components/modalEditNameUser/ModalEditNameUserContext";
 import ModalEditEmailUserProvider from "../../components/usuario/components/modalEditEmailUser/ModalEditEmailUserContext";
-import ModalEditPasswordUserProvider from "@/components/usuario/components/modalEditPasswordUser/ModalEditEmailUserContext";
 import ModalEditPhoneNumberProvider from "@/components/usuario/components/modalEditPhone/ModalEditPhoneNumberContext";
 import ModalConfirmLogoutProvider from "@/components/usuario/components/modalConfirmLogout/ModalEditPhoneNumberContext";
+import ModalEditPasswordUserProvider from "@/components/usuario/components/modalEditPasswordUser/ModalEditPasswordUserContext";
 // import ModalEditPasswordUser from "@/components/usuario/components/modalEditPasswordUser/ModalEditPasswordUser";
 // import ModalEditPasswordUserProvider from "../../components/usuario/components/modalEditPasswordUser/ModalEditNameUserContext";
 

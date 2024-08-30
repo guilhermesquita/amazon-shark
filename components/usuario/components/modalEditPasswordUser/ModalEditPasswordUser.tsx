@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useForm } from "react-hook-form";
 
 interface modalProps {
   isOpen: boolean;
@@ -17,6 +18,9 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
     AOS.init();
   }, []);
 
+  const {register, handleSubmit, 
+    formState: {errors}} = useForm()
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -24,6 +28,10 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
       onCloseModal();
     }, 500); 
   };
+
+  const handleSubmitForm = (data: any) => {
+    console.log(data);
+  }
 
   const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -80,7 +88,7 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
                 </button>
               </div>
               <div className="p-4 md:p-5">
-                <form className="space-y-4" action="#">
+                <form className="space-y-4" onSubmit={handleSubmit(handleSubmitForm)}>
                   <div>
                     <label
                       className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -88,7 +96,7 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
                       Coloque aqui sua senha
                     </label>
                     <input
-                      type="text"
+                      type="password" {...register('password', {required: true})}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       required
                     />
