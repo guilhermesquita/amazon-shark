@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useForm } from "react-hook-form";
+import { useUser } from "@/app/context/userContext";
+import { updatePassword } from "@/app/login/actions";
 
 interface modalProps {
   isOpen: boolean;
@@ -13,13 +15,17 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
   onCloseModal,
 }: modalProps) => {
   const [isClosing, setIsClosing] = useState(false);
+  const {user} = useUser()
 
   useEffect(() => {
     AOS.init();
   }, []);
 
   const {register, handleSubmit, 
-    formState: {errors}} = useForm()
+    formState: {errors}} = useForm({
+      mode: "onSubmit",
+      // resolver: yupResolver(schema),
+    })
 
   const handleClose = () => {
     setIsClosing(true);
@@ -29,8 +35,15 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
     }, 500); 
   };
 
-  const handleSubmitForm = (data: any) => {
-    console.log(data);
+  const handleSubmitForm = async (data: any) => {
+    console.log(data.password);
+    try {
+      await updatePassword(data.password);
+    } catch (error) {
+      console.error("Erro ao atualizar o perfil:", error);
+    }finally{
+      handleClose();
+    }
   }
 
   const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -107,8 +120,7 @@ const ModalEditPasswordUser: React.FC<modalProps> = ({
                     >
                       Confirmar senha
                     </label>
-                    <input
-                      type="text"
+                    <input type="password" {...register('passwordConfirm', {required: true})}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       required
                     />
