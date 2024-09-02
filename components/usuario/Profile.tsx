@@ -45,8 +45,8 @@ const Profile = () => {
             <p className="text-xs text-[#757575]">nome completo</p>
           </div>
           <div
-            onClick={openModalEditEmail}
-            className="flex flex-col hover:bg-[#cbcbcb] p-2 rounded duration-200 cursor-pointer"
+            // onClick={openModalEditEmail}
+            className="flex flex-col hover:bg-[#cbcbcb] text-[#757575] p-2 rounded duration-200 cursor-pointer"
           >
             <p>{user?.email}</p>
             <p className="text-xs text-[#757575]">email</p>
